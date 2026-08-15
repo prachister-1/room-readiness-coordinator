@@ -4,6 +4,10 @@ Clickable prototype for a Mews-inspired hotel operations product. It coordinates
 
 **Not a PMS. Not a chatbot. Mock data only.**
 
+## Live demo
+
+https://prachister-1.github.io/room-readiness-coordinator/
+
 ## Demo for recruiters
 
 Open the live app, then:
