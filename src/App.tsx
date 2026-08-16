@@ -7,6 +7,11 @@ import { Rooms } from './pages/Rooms'
 import { GuestMessages } from './pages/GuestMessages'
 import { Analytics } from './pages/Analytics'
 import { Settings } from './pages/Settings'
+import { AgentOrchestration } from './pages/AgentOrchestration'
+import { Playbooks } from './pages/Playbooks'
+import { Policies } from './pages/Policies'
+import { DecisionInbox } from './pages/DecisionInbox'
+import { ShiftHandover } from './pages/ShiftHandover'
 
 export default function App() {
   return (
@@ -15,6 +20,11 @@ export default function App() {
         <Routes>
           <Route element={<AppShell />}>
             <Route path="/" element={<ArrivalReadiness />} />
+            <Route path="/inbox" element={<DecisionInbox />} />
+            <Route path="/orchestration" element={<AgentOrchestration />} />
+            <Route path="/playbooks" element={<Playbooks />} />
+            <Route path="/handover" element={<ShiftHandover />} />
+            <Route path="/policies" element={<Policies />} />
             <Route path="/housekeeping" element={<Housekeeping />} />
             <Route path="/rooms" element={<Rooms />} />
             <Route path="/messages" element={<GuestMessages />} />

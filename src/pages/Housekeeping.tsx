@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Flag, Play, Check } from 'lucide-react'
 import { useStore } from '../state/Store'
 
@@ -8,6 +8,13 @@ export function Housekeeping() {
   const [sheet, setSheet] = useState(false)
   const active = hkTasks.find((t) => t.id === activeId) ?? hkTasks[0]
   const done = hkTasks.filter((t) => t.status === 'complete').length
+  const dispatched = hkTasks.filter((t) => t.source === 'coordinator' && t.status !== 'complete')
+  const dispatchedKey = dispatched.map((t) => t.id).join('|')
+
+  useEffect(() => {
+    const first = dispatchedKey.split('|')[0]
+    if (first) setActiveId(first)
+  }, [dispatchedKey])
 
   return (
     <div className="mx-auto max-w-[430px] pb-20">
@@ -33,7 +40,12 @@ export function Housekeeping() {
                   className={`flex w-full items-center justify-between px-5 py-3 text-left ${activeId === t.id ? 'bg-canvas' : ''}`}
                 >
                   <div>
-                    <div className="text-sm font-semibold">Room {t.roomNumber}</div>
+                    <div className="flex items-center gap-2">
+                      <div className="text-sm font-semibold">Room {t.roomNumber}</div>
+                      {t.source === 'coordinator' && t.status !== 'complete' && (
+                        <span className="rounded-full bg-info-soft px-1.5 py-0.5 text-[9px] font-bold tracking-wide text-info uppercase">New</span>
+                      )}
+                    </div>
                     <div className="text-xs text-muted">{t.title}</div>
                   </div>
                   <span className={`text-[11px] font-bold ${t.status === 'complete' ? 'text-ready' : t.status === 'blocked' ? 'text-blocked' : 'text-risk'}`}>
@@ -47,7 +59,10 @@ export function Housekeeping() {
             <div className="text-[11px] font-bold tracking-wide text-muted uppercase">Task detail</div>
             <h2 className="mt-1 text-2xl font-semibold">Room {active.roomNumber}</h2>
             <p className="mt-1 text-sm font-medium">{active.action}</p>
-            <p className="mt-1 text-xs text-muted">Due {active.dueTime}</p>
+            <p className="mt-1 text-xs text-muted">
+              Due {active.dueTime}
+              {active.source === 'coordinator' ? ' · Dispatched by Coordinator' : ''}
+            </p>
             <div className="mt-4 rounded-2xl bg-canvas p-3">
               <div className="text-[11px] font-bold text-muted uppercase">Why it matters</div>
               <p className="mt-1 text-sm leading-relaxed">{active.why}</p>

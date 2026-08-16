@@ -1,16 +1,22 @@
 import { createContext, useContext, useMemo, useReducer, type ReactNode } from 'react'
-import { hkTasks as seedTasks, initialCases } from '../data/mock'
-import type { HkTask, ReadinessCase, Role, Toast } from '../types'
+import { hkTasks as seedTasks, initialCases, rooms as seedRooms } from '../data/mock'
+import { initialDecisions, initialHandoverAcks } from '../data/decisions'
+import type { AutonomyMode, DecisionItem, HandoverAck, HkTask, ReadinessCase, Role, RoomRecord, Toast } from '../types'
 
 interface State {
   cases: ReadinessCase[]
   hkTasks: HkTask[]
+  rooms: RoomRecord[]
+  decisions: DecisionItem[]
+  handoverAcks: HandoverAck[]
   toasts: Toast[]
   selectedCaseId: string | null
   search: string
   role: Role
   chooseRoomFor: string | null
   flagTaskId: string | null
+  autonomyMode: AutonomyMode
+  automatedToday: number
 }
 
 type Action =
@@ -23,6 +29,12 @@ type Action =
   | { type: 'choose-room'; id: string | null }
   | { type: 'flag-task'; id: string | null }
   | { type: 'patch-task'; id: string; patch: Partial<HkTask> }
+  | { type: 'upsert-task'; task: HkTask }
+  | { type: 'patch-room'; number: string; patch: Partial<RoomRecord> }
+  | { type: 'patch-decision'; id: string; patch: Partial<DecisionItem> }
+  | { type: 'patch-ack'; id: string | 'all' }
+  | { type: 'autonomy'; mode: AutonomyMode }
+  | { type: 'automated'; n?: number }
 
 const now = () =>
   new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })
@@ -66,6 +78,36 @@ function reducer(state: State, action: Action): State {
         ...state,
         hkTasks: state.hkTasks.map((t) => (t.id === action.id ? { ...t, ...action.patch } : t)),
       }
+    case 'upsert-task': {
+      const exists = state.hkTasks.some((t) => t.id === action.task.id)
+      return {
+        ...state,
+        hkTasks: exists
+          ? state.hkTasks.map((t) => (t.id === action.task.id ? action.task : t))
+          : [action.task, ...state.hkTasks],
+      }
+    }
+    case 'patch-room':
+      return {
+        ...state,
+        rooms: state.rooms.map((r) => (r.number === action.number ? { ...r, ...action.patch } : r)),
+      }
+    case 'patch-decision':
+      return {
+        ...state,
+        decisions: state.decisions.map((d) => (d.id === action.id ? { ...d, ...action.patch } : d)),
+      }
+    case 'patch-ack':
+      return {
+        ...state,
+        handoverAcks: state.handoverAcks.map((a) =>
+          action.id === 'all' || a.id === action.id ? { ...a, acknowledged: true } : a,
+        ),
+      }
+    case 'autonomy':
+      return { ...state, autonomyMode: action.mode }
+    case 'automated':
+      return { ...state, automatedToday: state.automatedToday + (action.n ?? 1) }
     default:
       return state
   }
@@ -93,6 +135,15 @@ interface StoreValue extends State {
   submitFlag: (reason: string) => void
   updateMessage: (id: string, patch: Partial<ReadinessCase['message']>) => void
   sendDraft: (id: string) => void
+  resolveDecision: (id: string, actionId: string) => void
+  oliviaPromiseAction: (kind: 'expect' | 'conditional' | 'wait' | 'escalate') => void
+  verifyOliviaReady: () => void
+  approveSamira: () => void
+  ackHandover: (id: string) => void
+  ackAllHandover: () => void
+  setAutonomyMode: (mode: AutonomyMode) => void
+  runBoundedAutomation: () => void
+  writesAllowed: boolean
 }
 
 const StoreContext = createContext<StoreValue | null>(null)
@@ -101,12 +152,17 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, {
     cases: initialCases,
     hkTasks: seedTasks,
+    rooms: seedRooms,
+    decisions: initialDecisions,
+    handoverAcks: initialHandoverAcks,
     toasts: [],
     selectedCaseId: null,
     search: '',
     role: 'manager' as Role,
     chooseRoomFor: null,
     flagTaskId: null,
+    autonomyMode: 'approve' as AutonomyMode,
+    automatedToday: 42,
   })
 
   const selected = state.cases.find((c) => c.id === state.selectedCaseId) ?? null
@@ -118,8 +174,28 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       if (!current) return
       dispatch({ type: 'patch-case', id, patch: next(current) })
     }
+    const upsertTask = (task: HkTask) => dispatch({ type: 'upsert-task', task })
+    const patchRoom = (number: string, roomPatch: Partial<RoomRecord>) =>
+      dispatch({ type: 'patch-room', number, patch: roomPatch })
+    const closeDecision = (id: string, status: DecisionItem['status'], resolution: string) =>
+      dispatch({
+        type: 'patch-decision',
+        id,
+        patch: { status, resolution, resolvedAt: now(), resolvedBy: 'Alex Morgan' },
+      })
+    let bypassGuard = false
+    const writesAllowed = state.autonomyMode === 'approve' || state.autonomyMode === 'bounded'
+    const guardWrite = () => {
+      if (bypassGuard || writesAllowed) return true
+      toast(
+        state.autonomyMode === 'pause'
+          ? 'Automation paused. No writes to Mews.'
+          : 'Recommend only. Agents proposed; staff execute in Mews.',
+      )
+      return false
+    }
 
-    return {
+    const api: StoreValue = {
       ...state,
       selected,
       select: (id) => dispatch({ type: 'select', id }),
@@ -127,7 +203,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       setRole: (role) => dispatch({ type: 'role', role }),
       toast,
       dismissToast: (id) => dispatch({ type: 'dismiss-toast', id }),
+      writesAllowed,
       approveSofia: () => {
+        if (!guardWrite()) return
         patch('sofia', (c) =>
           addAudit(
             {
@@ -149,7 +227,30 @@ export function StoreProvider({ children }: { children: ReactNode }) {
             'Alex Morgan',
           ),
         )
-        toast('Inspection reassigned to Priya S.')
+        patchRoom('225', {
+          status: 'inspection',
+          note: 'Inspection reassigned to Priya S. for Sofia Garcia',
+          assignedTo: 'Sofia Garcia',
+        })
+        upsertTask({
+          id: 'hk-225',
+          roomNumber: '225',
+          title: 'Final inspection after failed checks',
+          action: 'Re-inspect minibar replenishment and bathroom before releasing the room.',
+          dueTime: '13:56',
+          status: 'due',
+          why: 'Coordinator reassigned Sofia Garcia’s inspection to Priya S. after the first pass failed.',
+          items: ['Minibar restock proof', 'Bathroom recheck', 'Inspection card'],
+          checklist: [
+            { id: 'c1', label: 'Minibar replenished', complete: false },
+            { id: 'c2', label: 'Bathroom issue cleared', complete: false },
+            { id: 'c3', label: 'Supervisor sign-off', complete: false },
+          ],
+          source: 'coordinator',
+        })
+        toast('Inspection reassigned. New trace is on Housekeeping and Room 225.')
+        closeDecision('d-sofia', 'approved', 'Inspection reassigned to Priya S.')
+        dispatch({ type: 'automated' })
       },
       completeSofiaInspection: () => {
         patch('sofia', (c) =>
@@ -186,9 +287,27 @@ export function StoreProvider({ children }: { children: ReactNode }) {
             'Priya S.',
           ),
         )
+        patchRoom('225', {
+          status: 'ready',
+          note: 'Verified ready for Sofia Garcia',
+          assignedTo: 'Sofia Garcia',
+        })
+        dispatch({
+          type: 'patch-task',
+          id: 'hk-225',
+          patch: {
+            status: 'complete',
+            checklist: [
+              { id: 'c1', label: 'Minibar replenished', complete: true },
+              { id: 'c2', label: 'Bathroom issue cleared', complete: true },
+              { id: 'c3', label: 'Supervisor sign-off', complete: true },
+            ],
+          },
+        })
         toast('Room 225 verified ready. Room-ready message is now unlocked.')
       },
       sendReadyMessage: (id) => {
+        if (!guardWrite()) return
         patch(id, (c) => {
           if (!c.checks.every((k) => k.complete) && c.status !== 'ready') return c
           return addAudit(
@@ -218,13 +337,50 @@ export function StoreProvider({ children }: { children: ReactNode }) {
               statusDetail: `Reallocated to Room ${room}`,
               nextAction: 'Verify Room ' + room,
               inspectionCompletable: false,
+              traces: [
+                ...c.traces.map((t) =>
+                  t.status === 'complete' ? t : { ...t, status: 'cancelled' as const, evidence: 'Closed — room no longer assigned', roomNumber: '225' },
+                ),
+                {
+                  id: `tr-${room}-inspect`,
+                  caseId: 'sofia',
+                  name: `Room ${room} arrival inspection`,
+                  department: 'Supervisor' as const,
+                  owner: 'Priya S.',
+                  status: 'in-progress' as const,
+                  dueTime: '13:50',
+                  evidence: 'Copied remaining inspection requirement',
+                  roomNumber: room,
+                },
+              ],
             },
             'Chose alternative room',
             `Operator selected Room ${room} instead of reassigning inspection`,
           ),
         )
+        patchRoom('225', { note: 'Released from Sofia Garcia after reallocation', assignedTo: undefined })
+        patchRoom(room, {
+          status: 'inspection',
+          note: `Assigned to Sofia Garcia · verification still required`,
+          assignedTo: 'Sofia Garcia',
+        })
+        upsertTask({
+          id: `hk-${room}`,
+          roomNumber: room,
+          title: 'Arrival inspection after reallocation',
+          action: `Confirm Room ${room} is inspection-ready for Sofia Garcia.`,
+          dueTime: '13:50',
+          status: 'due',
+          why: `Coordinator moved Sofia Garcia from 225 to ${room}. Copy only the remaining inspection requirement.`,
+          items: ['Arrival inspection', 'Amenity check'],
+          checklist: [
+            { id: 'c1', label: 'Room inspected', complete: false },
+            { id: 'c2', label: 'Amenities confirmed', complete: false },
+          ],
+          source: 'coordinator',
+        })
         dispatch({ type: 'choose-room', id: null })
-        toast(`Sofia Garcia reallocated to Room ${room}. Verification still required.`)
+        toast(`Sofia Garcia reallocated to Room ${room}. New traces are on Housekeeping and Rooms.`)
       },
       escalateSofia: () => {
         patch('sofia', (c) =>
@@ -235,8 +391,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           ),
         )
         toast('Duty manager notified with Sofia Garcia’s evidence packet.')
+        closeDecision('d-sofia', 'escalated', 'Duty manager owns Sofia Garcia’s recovery.')
       },
       approveDaniel: () => {
+        if (!guardWrite()) return
         patch('daniel', (c) =>
           addAudit(
             {
@@ -258,14 +416,25 @@ export function StoreProvider({ children }: { children: ReactNode }) {
                 { ...c.traces[0], status: 'cancelled', evidence: 'Closed — room no longer assigned', roomNumber: '507' },
                 { ...c.traces[1], status: 'cancelled', evidence: 'Closed — room no longer assigned', roomNumber: '507' },
                 {
+                  id: 'tr-510-amenity',
+                  caseId: 'daniel',
+                  name: 'Suite 510 amenity and handover prep',
+                  department: 'Housekeeping',
+                  owner: 'Anna K.',
+                  status: 'in-progress',
+                  dueTime: '14:10',
+                  evidence: 'Copied relevant suite setup from 507',
+                  roomNumber: '510',
+                },
+                {
                   id: 'tr-510-inspect',
                   caseId: 'daniel',
                   name: 'Suite 510 handover check',
                   department: 'Supervisor',
                   owner: 'Priya S.',
-                  status: 'in-progress',
+                  status: 'not-started',
                   dueTime: '14:20',
-                  evidence: 'Inspected inventory · confirming setup',
+                  evidence: 'Blocked on housekeeping handover',
                   roomNumber: '510',
                 },
               ],
@@ -282,7 +451,34 @@ export function StoreProvider({ children }: { children: ReactNode }) {
             '510 matches Suite, inspected, no maintenance; 507 bathroom still blocked',
           ),
         )
-        toast('Daniel Kim reallocated to Suite 510. Guest message remains a holding note until verification.')
+        patchRoom('507', {
+          status: 'blocked',
+          note: 'Bathroom leak · released from Daniel Kim',
+          assignedTo: undefined,
+        })
+        patchRoom('510', {
+          status: 'inspection',
+          note: 'Assigned to Daniel Kim · handover in progress',
+          assignedTo: 'Daniel Kim',
+        })
+        upsertTask({
+          id: 'hk-510',
+          roomNumber: '510',
+          title: 'Suite handover after blocked-room move',
+          action: 'Copy suite amenities to 510 and leave it ready for supervisor inspection.',
+          dueTime: '14:10',
+          status: 'due',
+          why: 'Coordinator reallocated Daniel Kim from blocked 507 to inspected Suite 510. Only relevant prep was copied.',
+          items: ['Suite amenities', 'Welcome kit', 'Handover card'],
+          checklist: [
+            { id: 'c1', label: 'Suite amenities set', complete: false },
+            { id: 'c2', label: 'Bathroom verified dry', complete: false },
+            { id: 'c3', label: 'Ready for supervisor inspect', complete: false },
+          ],
+          source: 'coordinator',
+        })
+        toast('Daniel Kim moved to 510. New housekeeping trace and holding guest message are live.')
+        closeDecision('d-daniel', 'approved', 'Reallocated 507 → 510. Trace Agent copied relevant prep.')
       },
       keepDaniel: () => {
         patch('daniel', (c) =>
@@ -293,12 +489,14 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           ),
         )
         toast('Maintenance escalated for Room 507. Allocation unchanged.')
+        closeDecision('d-daniel', 'rejected', 'Kept Room 507. Maintenance escalated.')
       },
       contactDaniel: () => {
         dispatch({ type: 'select', id: 'daniel' })
         toast('Opened Daniel Kim’s case with the holding message draft.')
       },
       assignOlivia: () => {
+        if (!guardWrite()) return
         patch('olivia', (c) =>
           addAudit(
             {
@@ -311,13 +509,97 @@ export function StoreProvider({ children }: { children: ReactNode }) {
               tasksComplete: 1,
               nextAction: 'Complete 416 turn, then inspect',
               checks: c.checks.map((k) => (k.id === 'k1' ? { ...k, complete: true } : k)),
+              timeline: c.timeline.map((t) =>
+                t.label.toLowerCase().includes('allocation') ? { ...t, time: now(), complete: true } : t,
+              ),
+              traces: [
+                {
+                  id: 'tr-416-clean',
+                  caseId: 'olivia',
+                  name: 'Early-arrival priority clean',
+                  department: 'Housekeeping',
+                  owner: 'Anna K.',
+                  status: 'in-progress',
+                  dueTime: '12:05',
+                  evidence: 'Dispatched to Floor 4',
+                  roomNumber: '416',
+                },
+                {
+                  id: 'tr-416-inspect',
+                  caseId: 'olivia',
+                  name: 'Supervisor inspection',
+                  department: 'Supervisor',
+                  owner: 'Priya S.',
+                  status: 'not-started',
+                  dueTime: '12:20',
+                  evidence: 'Blocked on clean',
+                  roomNumber: '416',
+                },
+              ],
               recommendation: c.recommendation ? { ...c.recommendation, approved: true } : undefined,
+              message: bypassGuard
+                ? {
+                    ...c.message,
+                    status: 'sent',
+                    safeToSend: false,
+                    approvalLabel: 'Expectation-setting only — not a ready promise',
+                    body: 'Hi Olivia, we have received your 12:30 arrival request. We will confirm as soon as a matching room has passed inspection. We cannot promise the room is ready yet.',
+                  }
+                : {
+                    ...c.message,
+                    status: 'draft',
+                    safeToSend: false,
+                    approvalLabel: 'Awaiting operational confirmation',
+                    body: 'Hi Olivia, we have a matching room in preparation for your 12:30 arrival. We’ll message you as soon as it is verified ready.',
+                  },
+              promise: bypassGuard
+                ? {
+                    standardCheckIn: '15:00',
+                    requestedArrival: '12:30',
+                    predictedReady: '12:15',
+                    predictedConfidence: 78,
+                    currentPromise: 'Expectation set — early arrival acknowledged, readiness not confirmed',
+                    verifiedReadyAt: null,
+                    phase: 'forecast',
+                  }
+                : {
+                    standardCheckIn: '15:00',
+                    requestedArrival: '12:30',
+                    predictedReady: '12:15',
+                    predictedConfidence: 78,
+                    currentPromise: 'Early check-in request acknowledged — confirmation pending',
+                    verifiedReadyAt: null,
+                    phase: 'forecast',
+                  },
+              whyThisRoom:
+                'Room 416 is an inspected Standard Double that can support a 12:30 early arrival. Ready is still locked until the turn and inspection verify.',
             },
             'Assigned Room 416',
             'Inspected Standard Double supporting 12:30 early arrival',
           ),
         )
-        toast('Room 416 assigned to Olivia Brown.')
+        patchRoom('416', {
+          status: 'cleaning',
+          note: 'Assigned to Olivia Brown · early-arrival turn',
+          assignedTo: 'Olivia Brown',
+        })
+        upsertTask({
+          id: 'hk-416',
+          roomNumber: '416',
+          title: 'Prepare room for early arrival',
+          action: 'Complete a full clean and inspect so Room 416 can take Olivia Brown at 12:30.',
+          dueTime: '12:05',
+          status: 'due',
+          why: 'Coordinator assigned Olivia Brown to 416. Finish this turn so inspection can start.',
+          items: ['Standard double linen', 'Welcome kit', 'Early-arrival door card'],
+          checklist: [
+            { id: 'c1', label: 'Departure linen removed', complete: true },
+            { id: 'c2', label: 'Bathroom and surfaces complete', complete: false },
+            { id: 'c3', label: 'Ready for supervisor inspect', complete: false },
+          ],
+          source: 'coordinator',
+        })
+        toast('Room 416 assigned. Housekeeping trace and Rooms inventory are updated.')
       },
       startTask: (id) => {
         dispatch({ type: 'patch-task', id, patch: { status: 'in-progress' } })
@@ -330,7 +612,33 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           id,
           patch: { status: 'complete', checklist: task?.checklist.map((c) => ({ ...c, complete: true })) },
         })
-        toast('Task marked complete. Coordinator will re-evaluate readiness.')
+        if (task) {
+          patchRoom(task.roomNumber, { status: 'inspection', note: `Housekeeping complete · awaiting inspection` })
+          const linked = state.cases.find((c) => c.roomNumber === task.roomNumber)
+          if (linked) {
+            patch(linked.id, (c) =>
+              addAudit(
+                {
+                  ...c,
+                  traces: c.traces.map((t) =>
+                    t.department === 'Housekeeping' && t.roomNumber === task.roomNumber && t.status !== 'cancelled'
+                      ? { ...t, status: 'complete', evidence: 'Housekeeping marked complete' }
+                      : t,
+                  ),
+                  checks: c.checks.map((k) =>
+                    k.label.toLowerCase().includes('clean') ? { ...k, complete: true } : k,
+                  ),
+                  tasksComplete: Math.min(c.tasksTotal, c.tasksComplete + 1),
+                  nextAction: 'Await inspection, then Coordinator verifies ready',
+                },
+                'Housekeeping trace complete',
+                `Room ${task.roomNumber} marked complete on the housekeeping list`,
+                'Anna K.',
+              ),
+            )
+          }
+        }
+        toast('Task marked complete. The case and Rooms tab now show inspection pending.')
       },
       submitFlag: (reason) => {
         if (state.flagTaskId) {
@@ -375,7 +683,245 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         )
         toast('Holding message sent. Room-ready copy remains locked.')
       },
+      resolveDecision: (id, actionId) => {
+        if (id === 'd-daniel') {
+          if (actionId === 'approve') api.approveDaniel()
+          else if (actionId === 'keep') api.keepDaniel()
+          else if (actionId === 'escalate') {
+            api.keepDaniel()
+            closeDecision('d-daniel', 'escalated', 'Maintenance escalated to duty manager.')
+            toast('Daniel Kim’s maintenance issue escalated.')
+          } else {
+            api.contactDaniel()
+            closeDecision('d-daniel', 'approved', 'Opened guest contact with holding copy. Allocation still requires a separate approval.')
+          }
+          return
+        }
+        if (id === 'd-olivia') {
+          if (actionId === 'approve') api.oliviaPromiseAction('expect')
+          else if (actionId === 'wait') api.oliviaPromiseAction('wait')
+          else api.oliviaPromiseAction('escalate')
+          return
+        }
+        if (id === 'd-samira') {
+          if (actionId === 'approve') api.approveSamira()
+          else if (actionId === 'review') {
+            dispatch({ type: 'select', id: 'samira' })
+            toast('Opened Samira Khan’s case to review accessible alternatives.')
+          } else {
+            patch('samira', (c) =>
+              addAudit({ ...c, nextAction: 'Duty manager owns accessible recovery' }, 'Escalated accessibility move', 'Automatic move forbidden'),
+            )
+            closeDecision('d-samira', 'escalated', 'Duty manager owns the accessible-room recovery.')
+            toast('Samira Khan escalated. No room was moved.')
+          }
+          return
+        }
+        if (id === 'd-sofia') {
+          if (actionId === 'approve') api.approveSofia()
+          else api.escalateSofia()
+        }
+      },
+      oliviaPromiseAction: (kind) => {
+        if (kind !== 'wait' && !guardWrite()) return
+        if (kind === 'expect') {
+          patch('olivia', (c) =>
+            addAudit(
+              {
+                ...c,
+                promise: {
+                  ...c.promise,
+                  phase: 'forecast',
+                  currentPromise: 'Expectation set — early arrival acknowledged, readiness not confirmed',
+                },
+                message: {
+                  ...c.message,
+                  status: 'sent',
+                  safeToSend: false,
+                  approvalLabel: 'Expectation-setting only — not a ready promise',
+                  body: 'Hi Olivia, we have received your 12:30 arrival request. We will confirm as soon as a matching room has passed inspection. We cannot promise the room is ready yet.',
+                },
+              },
+              'Sent expectation-setting message',
+              'Early-arrival confirmations require verified readiness',
+            ),
+          )
+          closeDecision('d-olivia', 'approved', 'Expectation-setting message sent. Ready promise still locked.')
+          toast('Expectation-setting message sent. Ready promise remains locked.')
+          return
+        }
+        if (kind === 'conditional') {
+          patch('olivia', (c) =>
+            addAudit(
+              {
+                ...c,
+                promise: {
+                  ...c.promise,
+                  phase: 'forecast',
+                  currentPromise: 'Conditional: confirm by 12:20 if Room 416 inspection passes',
+                },
+              },
+              'Set conditional early-arrival promise',
+              'Confirmation still requires inspection evidence',
+            ),
+          )
+          toast('Conditional promise logged. Guest will only be confirmed after inspection.')
+          return
+        }
+        if (kind === 'wait') {
+          closeDecision('d-olivia', 'rejected', 'Wait for operational confirmation.')
+          toast('No guest message sent. Waiting for Room 416 verification.')
+          return
+        }
+        patch('olivia', (c) =>
+          addAudit({ ...c, nextAction: 'Duty manager owns early-arrival promise' }, 'Escalated early-arrival promise', 'Inspection still pending'),
+        )
+        closeDecision('d-olivia', 'escalated', 'Early-arrival promise escalated to duty manager.')
+        toast('Early-arrival promise escalated.')
+      },
+      verifyOliviaReady: () => {
+        patch('olivia', (c) =>
+          addAudit(
+            {
+              ...c,
+              status: 'ready',
+              statusDetail: 'Verified ready at 12:12',
+              verifiedAt: '12:12',
+              riskReason: 'Inspection passed',
+              tasksComplete: 4,
+              nextAction: 'Send room ready message',
+              checks: c.checks.map((k) => ({ ...k, complete: true })),
+              traces: c.traces.map((t) => ({ ...t, status: 'complete', evidence: 'Inspection passed' })),
+              promise: {
+                phase: 'verified',
+                predictedReady: '12:15',
+                predictedConfidence: 78,
+                currentPromise: 'Verified ready at 12:12',
+                verifiedReadyAt: '12:12',
+                standardCheckIn: '15:00',
+                requestedArrival: '12:30',
+              },
+              message: {
+                ...c.message,
+                status: 'draft',
+                safeToSend: true,
+                approvalLabel: 'Safe to send: readiness verified',
+                body: 'Hi Olivia, your room is ready. You can complete check-in now and collect your key from reception.',
+              },
+            },
+            'Verified Room 416 ready',
+            'All required room-readiness checks complete',
+            'Priya S.',
+          ),
+        )
+        patchRoom('416', { status: 'ready', note: 'Verified ready for Olivia Brown', assignedTo: 'Olivia Brown' })
+        toast('Verified ready at 12:12. Room-ready message is now unlocked.')
+      },
+      approveSamira: () => {
+        if (!guardWrite()) return
+        patch('samira', (c) =>
+          addAudit(
+            {
+              ...c,
+              roomNumber: '214',
+              floor: 2,
+              status: 'in-preparation',
+              statusDetail: 'Accessible move 112 → 214 approved',
+              riskReason: 'Handover inspection on 214',
+              nextAction: 'Verify Room 214 before guest message',
+              whyThisRoom: 'Room 214 is an inspected accessible king. Duty manager approved the move after 112 was blocked.',
+              traces: [
+                { ...c.traces[0], status: 'cancelled' as const, evidence: 'Closed — room no longer assigned', roomNumber: '112' },
+                {
+                  id: 'tr-214',
+                  caseId: 'samira',
+                  name: 'Accessible handover inspection',
+                  department: 'Supervisor',
+                  owner: 'Priya S.',
+                  status: 'in-progress' as const,
+                  dueTime: '16:10',
+                  evidence: 'Policy-approved accessible substitute',
+                  roomNumber: '214',
+                },
+              ],
+              recommendation: c.recommendation ? { ...c.recommendation, approved: true } : undefined,
+              message: {
+                ...c.message,
+                status: 'draft',
+                body: 'Hi Samira, we are preparing an accessible room for your arrival and will confirm as soon as it is verified ready.',
+              },
+            },
+            'Approved accessible move 112 → 214',
+            'Accessibility bookings must never be moved automatically',
+          ),
+        )
+        patchRoom('112', { note: 'Released from Samira Khan · still blocked', assignedTo: undefined })
+        patchRoom('214', { status: 'inspection', note: 'Assigned to Samira Khan · accessible handover', assignedTo: 'Samira Khan' })
+        upsertTask({
+          id: 'hk-214',
+          roomNumber: '214',
+          title: 'Accessible handover inspection',
+          action: 'Confirm accessibility hardware and leave Room 214 inspection-ready for Samira Khan.',
+          dueTime: '16:10',
+          status: 'due',
+          why: 'Duty manager approved an accessible-room move after 112 was blocked. This cannot be automatic.',
+          items: ['Accessibility hardware check', 'Inspection card'],
+          checklist: [
+            { id: 'c1', label: 'Hardware verified', complete: false },
+            { id: 'c2', label: 'Ready for supervisor', complete: false },
+          ],
+          source: 'coordinator',
+        })
+        closeDecision('d-samira', 'approved', 'Moved Samira Khan to accessible Room 214. Ready message still locked.')
+        toast('Samira Khan moved to Room 214. Housekeeping and Rooms are updated.')
+      },
+      ackHandover: (id) => dispatch({ type: 'patch-ack', id }),
+      ackAllHandover: () => {
+        dispatch({ type: 'patch-ack', id: 'all' })
+        toast('Evening handover acknowledged by Priya Shah.')
+      },
+      setAutonomyMode: (mode) => {
+        dispatch({ type: 'autonomy', mode })
+        if (mode === 'bounded') {
+          toast('Bounded auto-execution on. Eligible SOP actions will run; policy exceptions stay in the inbox.')
+        } else if (mode === 'approve') {
+          toast('Approve-to-execute. Agents recommend; staff click to write.')
+        } else if (mode === 'recommend') {
+          toast('Recommend only. No writes to Mews from this prototype.')
+        } else {
+          toast('Automation paused. Kill switch is on.')
+        }
+      },
+      runBoundedAutomation: () => {
+        if (state.autonomyMode !== 'bounded') {
+          toast('Turn on Bounded auto-execution in Policies first.')
+          return
+        }
+        bypassGuard = true
+        const olivia = state.cases.find((c) => c.id === 'olivia')
+        const sofia = state.cases.find((c) => c.id === 'sofia')
+        const ran: string[] = []
+        if (olivia && !olivia.roomNumber) {
+          api.assignOlivia()
+          closeDecision('d-olivia', 'approved', 'Bounded auto: assigned 416 and sent expectation-setting message.')
+          ran.push('assigned Olivia to 416 and sent an expectation-setting message')
+        } else if (state.decisions.find((d) => d.id === 'd-olivia')?.status === 'open') {
+          api.oliviaPromiseAction('expect')
+          ran.push('sent Olivia an expectation-setting message')
+        }
+        if (sofia && sofia.status === 'at-risk' && !sofia.recommendation?.approved) {
+          api.approveSofia()
+          ran.push('reassigned Sofia’s inspection')
+        }
+        bypassGuard = false
+        if (ran.length === 0) {
+          toast('No eligible auto actions left. Suite and accessibility decisions remain human-owned.')
+          return
+        }
+        toast(`Auto-ran: ${ran.join('; ')}. Daniel (suite) and Samira (accessibility) stayed in the inbox.`)
+      },
     }
+    return api
   }, [state, selected])
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>

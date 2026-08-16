@@ -35,6 +35,8 @@ export const rooms: RoomRecord[] = [
   { number: '330', type: 'Superior Double', floor: 3, status: 'vacant', note: 'Held for payment' },
   { number: '408', type: 'Deluxe King', floor: 4, status: 'occupied', note: 'Late checkout' },
   { number: '105', type: 'Accessible King', floor: 1, status: 'blocked', note: 'Maintenance hold' },
+  { number: '112', type: 'Accessible King', floor: 1, status: 'blocked', note: 'Accessible hardware fault · Samira Khan' },
+  { number: '214', type: 'Accessible King', floor: 2, status: 'ready', note: 'Inspected accessible alternative' },
   { number: '701', type: 'Suite', floor: 7, status: 'cleaning', note: 'VIP hold' },
 ]
 
@@ -868,6 +870,59 @@ export const initialCases: ReadinessCase[] = [
       approvalLabel: 'Awaiting operational confirmation',
     },
     audit: [audit('12:40', 'Coordinator', 'VIP hard stop', 'No autonomous suite move')],
+  },
+  {
+    id: 'samira',
+    guestName: 'Samira Khan',
+    reservationId: 'MH-48601',
+    eta: '16:30',
+    etaHour: 16,
+    promisedCheckIn: '16:30',
+    roomType: 'Accessible King',
+    roomNumber: '112',
+    floor: 1,
+    status: 'blocked',
+    statusDetail: 'Accessible room blocked — alternative exists',
+    riskReason: 'Original accessible room blocked',
+    tasksComplete: 1,
+    tasksTotal: 4,
+    nextAction: 'Duty manager must approve accessible move',
+    specialRequest: true,
+    paymentReady: true,
+    checkInReady: true,
+    whyThisRoom:
+      'Room 112 was the booked accessible king. It is blocked by a door-operator fault. Room 214 is an inspected accessible king and is the only policy-legal alternative. This move cannot run automatically.',
+    requirements: [
+      { id: 'r1', label: 'Accessible king required', met: false },
+      { id: 'r2', label: 'Payment pre-authorised', met: true },
+      { id: 'r3', label: 'Digital check-in complete', met: true },
+    ],
+    checks: [
+      { id: 'k1', label: 'Room allocation confirmed', complete: true },
+      { id: 'k2', label: 'Cleaning complete', complete: false },
+      { id: 'k3', label: 'Supervisor inspection passed', complete: false },
+      { id: 'k4', label: 'Payment and check-in prerequisites complete', complete: true },
+    ],
+    timeline: [{ id: 't1', label: 'Accessible allocation confirmed', time: '09:10', complete: true }],
+    traces: [
+      { id: 'tr1', caseId: 'samira', name: 'Door operator repair', department: 'Maintenance', owner: 'Chris P.', status: 'overdue', dueTime: '12:00', evidence: 'Parts on order', roomNumber: '112' },
+    ],
+    recommendation: {
+      id: 'samira-214',
+      kind: 'reallocate',
+      title: 'Move to accessible Room 214',
+      body: 'Room 214 is an inspected accessible king. Policy forbids an automatic accessibility move — duty manager approval is required.',
+      confidence: 'High',
+    },
+    message: {
+      status: 'blocked',
+      channel: 'SMS',
+      language: 'English',
+      body: 'Hi Samira, our duty manager is confirming an accessible room for your arrival. We will update you as soon as it is verified.',
+      safeToSend: false,
+      approvalLabel: 'Awaiting operational confirmation',
+    },
+    audit: [audit('11:05', 'Coordinator', 'Blocked automatic move', 'Accessibility bookings must never be moved automatically')],
   },
 ]
 

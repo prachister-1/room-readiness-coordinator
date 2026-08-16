@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { Check, Circle, X } from 'lucide-react'
 import { useStore } from '../../state/Store'
 import { StatusBadge, Pill } from '../ui/Badge'
+import { ArrivalPromisePanel, EvidencePack } from '../readiness/ArrivalPromise'
+import { CaseStateMachine } from '../readiness/StateMachine'
 import { traceClass } from '../../lib/status'
 
 export function CaseDrawer() {
@@ -84,6 +86,9 @@ export function CaseDrawer() {
             </section>
           ) : (
             <>
+              <CaseStateMachine c={c} />
+              <ArrivalPromisePanel c={c} />
+              <EvidencePack c={c} />
               <Timeline c={c} />
 
               {c.id === 'sofia' && c.status === 'at-risk' && !c.recommendation?.approved && <SofiaRecovery />}
@@ -110,6 +115,15 @@ export function CaseDrawer() {
                   <p className="mb-3 text-sm">{c.recommendation?.body}</p>
                   <button className="rounded-lg bg-navy px-3 py-2 text-sm font-semibold text-white" onClick={store.assignOlivia}>
                     Assign Room 416
+                  </button>
+                </ActionCard>
+              )}
+
+              {c.status === 'ready' && c.id === 'olivia' && c.message.status !== 'sent' && (
+                <ActionCard tone="ready" title="Send room ready message">
+                  <p className="mb-3 text-sm">Verified ready at 12:12. The guest-facing room-ready template is now unlocked.</p>
+                  <button className="rounded-lg bg-ready px-3 py-2 text-sm font-semibold text-white" onClick={() => store.sendReadyMessage('olivia')}>
+                    Send room ready message
                   </button>
                 </ActionCard>
               )}

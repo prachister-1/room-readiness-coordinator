@@ -110,6 +110,30 @@ export function ArrivalReadiness() {
         </section>
       </div>
 
+      <section className="rounded-2xl border border-line bg-white p-4">
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <div>
+            <h2 className="text-sm font-semibold">Next 90 minutes — promise watch</h2>
+            <p className="text-xs text-muted">Arrivals that can still miss a verified ready time. Recover here; do not invent a guest promise.</p>
+          </div>
+        </div>
+        <div className="grid gap-2 md:grid-cols-3">
+          {cases
+            .filter((c) => ['olivia', 'sofia', 'daniel', 'james', 'samira'].includes(c.id) && c.status !== 'ready')
+            .map((c) => (
+              <button
+                key={c.id}
+                onClick={() => select(c.id)}
+                className="rounded-xl border border-line p-3 text-left hover:border-ready"
+              >
+                <div className="text-sm font-semibold">{c.guestName}</div>
+                <div className="text-xs text-muted">Arrival {c.eta} · {c.roomNumber ? `Room ${c.roomNumber}` : 'Unassigned'}</div>
+                <div className="mt-2 text-xs font-medium text-risk">{c.nextAction}</div>
+              </button>
+            ))}
+        </div>
+      </section>
+
       <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-4">
         {columns.map((col) => {
           const items = filtered.filter((c) => c.status === col.key)

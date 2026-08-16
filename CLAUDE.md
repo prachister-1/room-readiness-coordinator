@@ -1,6 +1,6 @@
 # Mews Front Office Agent Prototype
 
-Clickable prototype for **Arrival Exception Agent**: a controlled Mews operations agent that detects today's arrival risks, recommends a safe resolution, executes pre-approved low-risk actions, verifies the result, and leaves an audit trail.
+Clickable prototype for **Room Readiness Coordinator**: a Mews-native orchestration layer. It turns reservation, room, housekeeping, maintenance, check-in and payment signals into one outcome: the right room is ready for the right guest at the right time, and the guest is informed only when that is verified.
 
 ## Arness
 

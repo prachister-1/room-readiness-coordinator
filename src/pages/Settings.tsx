@@ -1,4 +1,15 @@
+import { Link } from 'react-router-dom'
+import { useStore } from '../state/Store'
+
+const labels = {
+  recommend: 'Recommend only — agents propose, staff execute in Mews',
+  approve: 'Approve-to-execute — same-category moves and traces after a click',
+  bounded: 'Bounded auto-execution — reversible SOP work can run; promises stay human',
+  pause: 'Paused — kill switch on, no writes',
+}
+
 export function Settings() {
+  const { autonomyMode } = useStore()
   return (
     <div className="max-w-3xl space-y-4 pb-16">
       <div>
@@ -11,9 +22,10 @@ export function Settings() {
       </section>
       <section className="rounded-2xl border border-line bg-white p-5">
         <h2 className="text-sm font-semibold">Autonomy band</h2>
-        <p className="mt-1 text-sm text-muted">
-          Recommendation + approved write. Same-category inspected room moves require a duty-manager click. No silent execution. VIP, accessibility, payments and guest-ready claims are hard-gated.
-        </p>
+        <p className="mt-1 text-sm text-muted">{labels[autonomyMode]}</p>
+        <Link to="/policies" className="mt-3 inline-block text-sm font-semibold text-ready">
+          Change in Policies & Guardrails
+        </Link>
       </section>
       <section className="rounded-2xl border border-line bg-white p-5">
         <h2 className="text-sm font-semibold">Guest messaging policy</h2>

@@ -39,6 +39,9 @@ export function GuestMessages() {
           </div>
           <Pill tone={c.message.safeToSend && !readyLocked ? 'ready' : 'risk'}>{c.message.approvalLabel}</Pill>
         </div>
+        <p className="mt-2 max-w-2xl text-sm text-muted">
+          Drafts update when the Coordinator allocates a room or verifies readiness. A “room ready” send stays locked until checks pass.
+        </p>
 
         <div className="mt-5 grid gap-3 sm:grid-cols-3">
           <label className="text-xs font-semibold text-muted">

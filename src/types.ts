@@ -4,6 +4,11 @@ export type Department = 'Housekeeping' | 'Supervisor' | 'Maintenance' | 'Front 
 export type Channel = 'SMS' | 'WhatsApp' | 'Email'
 export type Role = 'manager' | 'housekeeper'
 export type HkTaskStatus = 'complete' | 'due' | 'blocked' | 'in-progress'
+export type PromisePhase = 'requested' | 'forecast' | 'confirmed' | 'at-risk' | 'verified'
+export type DecisionCategory = 'arrival-risk' | 'room-allocation' | 'guest-communication' | 'policy-exception'
+export type DecisionSeverity = 'critical' | 'medium' | 'policy'
+export type DecisionStatus = 'open' | 'approved' | 'rejected' | 'escalated'
+export type AutonomyMode = 'recommend' | 'approve' | 'bounded' | 'pause'
 
 export interface CheckItem {
   id: string
@@ -91,6 +96,54 @@ export interface ReadinessCase {
   message: GuestMessage
   audit: AuditEvent[]
   inspectionCompletable?: boolean
+  promise?: Partial<ArrivalPromise>
+}
+
+export interface ArrivalPromise {
+  standardCheckIn: string
+  requestedArrival: string
+  predictedReady: string | null
+  predictedConfidence: number | null
+  currentPromise: string
+  verifiedReadyAt: string | null
+  phase: PromisePhase
+}
+
+export interface DecisionAction {
+  id: string
+  label: string
+  kind: 'approve' | 'reject' | 'escalate' | 'other'
+}
+
+export interface DecisionItem {
+  id: string
+  title: string
+  caseId: string
+  guestName: string
+  arrival: string
+  impact: string
+  agents: string
+  confidence: number
+  why: string
+  policy: string
+  recommendation: string
+  alternatives: string[]
+  actions: DecisionAction[]
+  category: DecisionCategory
+  severity: DecisionSeverity
+  status: DecisionStatus
+  autoEligible: boolean
+  autoReason: string
+  resolvedAt?: string
+  resolvedBy?: string
+  resolution?: string
+}
+
+export interface HandoverAck {
+  id: string
+  label: string
+  caseId: string
+  acknowledged: boolean
 }
 
 export interface HkTask {
@@ -103,6 +156,7 @@ export interface HkTask {
   why: string
   items: string[]
   checklist: CheckItem[]
+  source?: 'coordinator'
 }
 
 export interface RoomRecord {
@@ -111,6 +165,7 @@ export interface RoomRecord {
   floor: number
   status: 'ready' | 'cleaning' | 'inspection' | 'blocked' | 'occupied' | 'vacant'
   note: string
+  assignedTo?: string
 }
 
 export interface Toast {
