@@ -24,7 +24,7 @@ The duty manager opens Guest Messages or chooses Message guest on a case.
 
 ## Main Success Scenario
 
-1. The duty manager selects a guest (Maya for sent ready copy; Sofia for a holding draft).
+1. The duty manager selects a guest (Kiara for sent ready copy; Sofia for a holding draft).
 2. The system shows channel, language, body, and an approval badge.
 3. If all readiness checks are complete and status is Ready, the badge is “Safe to send: readiness verified”.
 4. The duty manager chooses Send now.

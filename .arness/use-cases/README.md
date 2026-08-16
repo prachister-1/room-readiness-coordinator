@@ -20,12 +20,12 @@ Behavioral specs for the **clickable prototype**. They describe the closed loop 
 | ID | Title | Actor | Demo guest | Priority |
 |---|---|---|---|---|
 | [UC-001](./UC-001-monitor-arrival-readiness.md) | Monitor arrival readiness | Duty manager | Board | Must-have |
-| [UC-002](./UC-002-verify-and-notify-ready-room.md) | Verify and notify a ready room | Duty manager | Maya Patel | Must-have |
+| [UC-002](./UC-002-verify-and-notify-ready-room.md) | Verify and notify a ready room | Duty manager | Kiara Garcia | Must-have |
 | [UC-003](./UC-003-recover-at-risk-inspection.md) | Recover an at-risk inspection | Duty manager | Sofia Garcia | Must-have |
 | [UC-004](./UC-004-reallocate-blocked-room.md) | Reallocate a blocked room | Duty manager | Daniel Kim | Must-have |
 | [UC-005](./UC-005-assign-unassigned-early-arrival.md) | Assign a room for an unassigned early arrival | Duty manager | Olivia Brown | Must-have |
 | [UC-006](./UC-006-execute-housekeeping-trace.md) | Execute a housekeeping trace | Housekeeper | Anna K. | Must-have |
-| [UC-007](./UC-007-send-gated-guest-message.md) | Send a gated guest message | Duty manager | Maya / Sofia | Must-have |
+| [UC-007](./UC-007-send-gated-guest-message.md) | Send a gated guest message | Duty manager | Kiara / Sofia | Must-have |
 | [UC-008](./UC-008-escalate-policy-hard-stop.md) | Escalate a policy hard stop | Duty manager | Kenji / Priya Nair | Should-have |
 
 ## System diagram

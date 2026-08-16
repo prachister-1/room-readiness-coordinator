@@ -21,7 +21,7 @@ export const playbooks = [
     approvals: ['High-cost amenities', 'Ready message after verification'],
     outcome: 'Room-ready message only after cot, bedding and inspection are verified',
     measure: 'Special requests completed correctly before guest arrival.',
-    example: 'Maya Patel, Room 412.',
+    example: 'Kiara Garcia, Room 412.',
     recommendation: 'Keep 412. Create priority clean, feather-free bedding, cot delivery, supervisor inspection.',
     actions: ['Approve trace pack', 'Edit traces', 'Hold ready status'],
   },

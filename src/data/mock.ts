@@ -48,7 +48,7 @@ export const hkTasks: HkTask[] = [
     action: 'Confirm feather-free setup remains in place and leave the room inspection-ready.',
     dueTime: '11:20',
     status: 'complete',
-    why: 'Maya Patel arrives at 12:00 with a verified early check-in. This room is already promised ready.',
+    why: 'Kiara Garcia arrives at 12:00 with a verified early check-in. This room is already promised ready.',
     items: ['Feather-free duvet', 'Hypoallergenic pillows', 'Inspection card'],
     checklist: [
       { id: 'c1', label: 'Bed stripped and remade feather-free', complete: true },
@@ -172,7 +172,7 @@ export const hkTasks: HkTask[] = [
 export const initialCases: ReadinessCase[] = [
   {
     id: 'maya',
-    guestName: 'Maya Patel',
+    guestName: 'Kiara Garcia',
     reservationId: 'MH-48291',
     eta: '12:00',
     etaHour: 12,
@@ -191,7 +191,7 @@ export const initialCases: ReadinessCase[] = [
     paymentReady: true,
     checkInReady: true,
     whyThisRoom:
-      'Room 412 was chosen because it matches Maya’s booked Deluxe King room type, is on her preferred quiet floor, was already available for inspection, and supports her requested early arrival. Feather-free bedding was confirmed through the hotel’s approved housekeeping SOP.',
+      'Room 412 was chosen because it matches Kiara’s booked Deluxe King room type, is on her preferred quiet floor, was already available for inspection, and supports her requested early arrival. Feather-free bedding was confirmed through the hotel’s approved housekeeping SOP.',
     requirements: [
       { id: 'r1', label: 'Early arrival requested', met: true },
       { id: 'r2', label: 'Feather-free bedding', met: true },
@@ -223,7 +223,7 @@ export const initialCases: ReadinessCase[] = [
       status: 'sent',
       channel: 'WhatsApp',
       language: 'English',
-      body: 'Hi Maya, your room is ready earlier than expected. You can complete check-in now and collect your key from reception. We have prepared the room according to your feather-free bedding preference.',
+      body: 'Hi Kiara, your room is ready earlier than expected. You can complete check-in now and collect your key from reception. We have prepared the room according to your feather-free bedding preference.',
       safeToSend: true,
       approvalLabel: 'Safe to send: readiness verified',
     },

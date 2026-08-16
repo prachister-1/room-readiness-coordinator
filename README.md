@@ -13,7 +13,7 @@ https://prachister-1.github.io/room-readiness-coordinator/
 Open the live app, then:
 
 1. **UC-001** Arrival Readiness board — four states, forecast, recommendations (not yet executed)
-2. **UC-002** Maya Patel — already verified Ready; feather-free SOP; guest notified
+2. **UC-002** Kiara Garcia — already verified Ready; feather-free SOP; guest notified
 3. **UC-003** Sofia Garcia — Approve inspection reassignment → Mark complete → room-ready message unlocks
 4. **UC-004** Daniel Kim — Approve 507 → 510; holding message only
 5. **UC-005** Olivia Brown — Assign Room 416 for early arrival

@@ -16,18 +16,18 @@ graph LR
 
 ## Preconditions
 
-- A Readiness Case exists (demo: Maya Patel, reservation MH-48291).
+- A Readiness Case exists (demo: Kiara Garcia, reservation MH-48291).
 - Booked category is Deluxe King; Room 412 is assigned.
 - Required traces for clean, feather-free bedding, and inspection are complete.
 - Payment is pre-authorised and digital check-in is complete.
 
 ## Trigger
 
-The duty manager opens Maya Patel’s Readiness Case from the Ready column.
+The duty manager opens Kiara Garcia’s Readiness Case from the Ready column.
 
 ## Main Success Scenario
 
-1. The duty manager selects Maya Patel.
+1. The duty manager selects Kiara Garcia.
 2. The system shows status Room ready, verified at 11:42, Room 412 Deluxe King.
 3. The system shows the readiness timeline through “Guest message sent”.
 4. The system shows “Why this room?” with the policy rationale (category match, quiet floor, early arrival, feather-free SOP).
@@ -62,4 +62,4 @@ The duty manager opens Maya Patel’s Readiness Case from the Ready column.
 
 - **Priority:** Must-have
 - **Complexity:** S
-- **Screen References:** Arrival Readiness Ready column, Readiness Case drawer (Maya)
+- **Screen References:** Arrival Readiness Ready column, Readiness Case drawer (Kiara)

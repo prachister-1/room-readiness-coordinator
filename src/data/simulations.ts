@@ -30,7 +30,7 @@ export const simulations: Record<string, { label: string; steps: SimStep[] }> = 
       { time: '10:13', event: 'Policy', agent: 'Coordinator', action: 'Blocked Ready until four traces verify', confidence: '—', approval: 'Hard gate', state: 'In preparation', policy: 'Special-request pack', outcome: 'Ready state locked' },
       { time: '10:16', event: 'Allocation', agent: 'Allocation Agent', action: 'Kept Room 412 · quiet floor, can take cot', confidence: 'High', approval: 'Confirmed', state: 'Allocation confirmed', policy: 'Deluxe King match', outcome: '412 locked' },
       { time: '11:39', event: 'Inspection', agent: 'Supervisor', action: 'Passed feather-free and cot setup', confidence: '—', approval: 'Evidence attached', state: 'Room ready', policy: 'Proof required', outcome: 'All traces complete' },
-      { time: '11:43', event: 'Notify', agent: 'Messaging Agent', action: 'Sent ready message with feather-free confirmation', confidence: 'Policy-gated', approval: 'Allowed', state: 'Guest notified', policy: 'Verified-only ready copy', outcome: 'Maya Patel notified' },
+      { time: '11:43', event: 'Notify', agent: 'Messaging Agent', action: 'Sent ready message with feather-free confirmation', confidence: 'Policy-gated', approval: 'Allowed', state: 'Guest notified', policy: 'Verified-only ready copy', outcome: 'Kiara Garcia notified' },
     ],
   },
   blocked: {

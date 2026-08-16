@@ -14,7 +14,7 @@ export function ShiftHandover() {
   const unresolved = cases.filter((c) => c.status !== 'ready' && ['daniel', 'sofia', 'olivia', 'samira', 'james'].includes(c.id))
   const promises = [
     {
-      guest: 'Maya Patel',
+      guest: 'Kiara Garcia',
       text: '“Your room is ready earlier than expected.”',
       sent: '11:43',
       status: 'Verified ready · guest notified',
