@@ -1,27 +1,12 @@
-# Room Readiness Coordinator
+# TravelXen consultant prototype
 
-Clickable prototype for a Mews-inspired hotel operations product. It coordinates arrivals, housekeeping, maintenance, and guest messaging so the right room is ready for the right guest — then sends a verified room-ready message.
+Clickable prototype of a Navan-style omnichannel consultant console. Genesys inbound is scored by an AI Supervisor, Ava contains in-policy work, and consultants take judgment, exceptions, and specialist routes.
 
-**Not a PMS. Not a chatbot. Mock data only.**
+**Product prototype only.** Local mock data. No authentication, databases, live booking/GDS/NDC, Genesys, Ava, or model calls. Integration fields are labelled demo data.
 
 ## Live demo
 
 https://prachister-1.github.io/room-readiness-coordinator/
-
-## Demo for recruiters (use cases)
-
-Open the live app, then:
-
-1. **UC-001** Arrival Readiness board — four states, forecast, recommendations (not yet executed)
-2. **UC-002** Kiara Garcia — already verified Ready; feather-free SOP; guest notified
-3. **UC-003** Sofia Garcia — Approve inspection reassignment → Mark complete → room-ready message unlocks
-4. **UC-004** Daniel Kim — Approve 507 → 510; holding message only
-5. **UC-005** Olivia Brown — Assign Room 416 for early arrival
-6. **UC-006** Housekeeping — Anna K. executes traces (no AI chat)
-7. **UC-007** Guest Messages — ready send locked until checks pass
-8. **UC-008** Kenji / Priya Nair — VIP and accessibility hard stops
-
-Full specs: `.arness/use-cases/`
 
 ## Run locally
 
@@ -31,3 +16,12 @@ npm run dev
 ```
 
 Opens at http://localhost:5173/
+
+## Demo script (presenter)
+
+1. **Inbox.** Replay Genesys inbound. Watch the AI Supervisor route to Ava, a consultant, or a specialist. Ava live shows what is contained without a human.
+2. **Luca / Olivia / Arjun.** Open trip and **Let Ava finish** (schedule change, seat, invoice).
+3. **Daniel Kim.** Refresh inventory, then **Hand UA 15 back to Ava**.
+4. **Maya Patel.** She asked for a person. Attest the 19:30 ET meeting, then **Hand EI 60 back to Ava**.
+5. **Sofia Rossi.** Ava is blocked. Route to a documents specialist — do not give immigration advice.
+6. **Quality.** Capture the learning signal. Use **Reset demo** in the header to start over.

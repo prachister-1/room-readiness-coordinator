@@ -1,39 +1,23 @@
 import { HashRouter, Navigate, Route, Routes } from 'react-router-dom'
-import { StoreProvider } from './state/Store'
-import { AppShell } from './components/layout/AppShell'
-import { ArrivalReadiness } from './pages/ArrivalReadiness'
-import { Housekeeping } from './pages/Housekeeping'
-import { Rooms } from './pages/Rooms'
-import { GuestMessages } from './pages/GuestMessages'
-import { Analytics } from './pages/Analytics'
-import { Settings } from './pages/Settings'
-import { AgentOrchestration } from './pages/AgentOrchestration'
-import { Playbooks } from './pages/Playbooks'
-import { Policies } from './pages/Policies'
-import { DecisionInbox } from './pages/DecisionInbox'
-import { ShiftHandover } from './pages/ShiftHandover'
+import { DemoProvider } from './consultant/store'
+import { ConsultantShell } from './consultant/Shell'
+import { IntakeQueue } from './consultant/IntakeQueue'
+import { ConsultantWorkspace } from './consultant/Workspace'
+import { QualityLearning } from './consultant/Learning'
 
 export default function App() {
   return (
-    <StoreProvider>
+    <DemoProvider>
       <HashRouter>
         <Routes>
-          <Route element={<AppShell />}>
-            <Route path="/" element={<ArrivalReadiness />} />
-            <Route path="/inbox" element={<DecisionInbox />} />
-            <Route path="/orchestration" element={<AgentOrchestration />} />
-            <Route path="/playbooks" element={<Playbooks />} />
-            <Route path="/handover" element={<ShiftHandover />} />
-            <Route path="/policies" element={<Policies />} />
-            <Route path="/housekeeping" element={<Housekeeping />} />
-            <Route path="/rooms" element={<Rooms />} />
-            <Route path="/messages" element={<GuestMessages />} />
-            <Route path="/analytics" element={<Analytics />} />
-            <Route path="/settings" element={<Settings />} />
+          <Route element={<ConsultantShell />}>
+            <Route path="/" element={<IntakeQueue />} />
+            <Route path="/workspace" element={<ConsultantWorkspace />} />
+            <Route path="/learning" element={<QualityLearning />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Route>
         </Routes>
       </HashRouter>
-    </StoreProvider>
+    </DemoProvider>
   )
 }
