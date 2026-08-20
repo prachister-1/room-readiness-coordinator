@@ -2,6 +2,7 @@ export interface SpecialistAgent {
   id: string
   name: string
   purpose: string
+  kind: 'ai' | 'auto'
   inputs: string[]
   outputs: string[]
   guardrails: string[]
@@ -25,6 +26,7 @@ export const specialistAgents: SpecialistAgent[] = [
   {
     id: 'allocation',
     name: 'Allocation Agent',
+    kind: 'ai',
     purpose: 'Finds the best room and timing from reservation rules, guest needs, availability, room condition, and property policy.',
     inputs: ['Booked room category', 'Guest preferences', 'Room inventory', 'Room readiness status', 'Arrival ETA', 'Cot / amenity fit'],
     outputs: ['Ranked room recommendations', 'Reason for recommendation', 'Confidence score', 'Alternative room options'],
@@ -43,6 +45,7 @@ export const specialistAgents: SpecialistAgent[] = [
   {
     id: 'task',
     name: 'Task Agent',
+    kind: 'auto',
     purpose: 'Turns the plan into housekeeping, maintenance, and logistics work with owners, deadlines, and proof.',
     inputs: ['Guest requests', 'Allocated room', 'Hotel SOPs', 'Arrival deadline', 'Room status', 'Staffing capacity'],
     outputs: ['Task list', 'Owner and department', 'Deadline', 'Dependencies', 'Required proof of completion'],
@@ -61,6 +64,7 @@ export const specialistAgents: SpecialistAgent[] = [
   {
     id: 'exception',
     name: 'Exception Agent',
+    kind: 'ai',
     purpose: 'Detects blocked or late readiness plans and recommends recovery actions.',
     inputs: ['Overdue tasks', 'Dirty assigned rooms', 'Maintenance blockers', 'Changed guest ETA', 'Staffing capacity', 'Available alternative rooms'],
     outputs: ['Reallocation recommendation', 'Re-prioritised task queue', 'Escalation recommendation', 'Updated predicted readiness time'],
@@ -79,6 +83,7 @@ export const specialistAgents: SpecialistAgent[] = [
   {
     id: 'trace',
     name: 'Trace Agent',
+    kind: 'auto',
     purpose: 'Keeps an auditable trail of every observation, recommendation, approval, and verification so operators can explain why.',
     inputs: ['Coordinator events', 'Specialist outputs', 'Approvals', 'Housekeeping evidence', 'Policy hits'],
     outputs: ['Audit log', 'Why-this-room explanation', 'Evidence pack', 'Replayable decision trace'],

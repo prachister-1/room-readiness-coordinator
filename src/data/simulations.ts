@@ -12,7 +12,7 @@ export interface SimStep {
 
 export const simulations: Record<string, { label: string; steps: SimStep[] }> = {
   special: {
-    label: 'Early arrival · 412 → 418',
+    label: 'Kiara · 412 → 418',
     steps: [
       { time: '10:58', event: 'Detect', agent: 'Coordinator', action: 'Guest arriving early · Room 412 dirty · cot required · HK capacity available · 418 clean and unassigned', confidence: '—', approval: 'Not required', state: 'At risk', policy: 'Arrival readiness', outcome: 'Kiara Garcia case flagged' },
       { time: '11:00', event: 'Reason', agent: 'Allocation Agent', action: 'Best option: move guest to Room 418', confidence: 'High 92%', approval: 'Awaiting duty manager', state: 'Allocation proposed', policy: 'Same Deluxe King · ready now · cot possible · no downstream conflict', outcome: '418 ranked first' },
@@ -25,7 +25,7 @@ export const simulations: Record<string, { label: string; steps: SimStep[] }> = 
     ],
   },
   early: {
-    label: 'Early arrival',
+    label: 'Olivia · assign 416',
     steps: [
       { time: '11:02', event: 'Guest message: arrive 12:30, early check-in?', agent: 'Coordinator', action: 'Opened Readiness Case · Olivia Brown', confidence: '—', approval: 'Not required', state: 'Monitoring → Allocation proposed', policy: 'Early-arrival SOP', outcome: 'Case created, unassigned' },
       { time: '11:03', event: 'Context refresh', agent: 'Exception Agent', action: 'Predicted a Standard Double can be ready by 12:15', confidence: '84%', approval: 'Advisory', state: 'Allocation proposed', policy: 'Do not steal inspected rooms from 12:00 promises', outcome: '416 marked candidate' },
@@ -37,7 +37,7 @@ export const simulations: Record<string, { label: string; steps: SimStep[] }> = 
     ],
   },
   blocked: {
-    label: 'Blocked room',
+    label: 'Daniel · 507 blocked',
     steps: [
       { time: '14:02', event: 'Maintenance event received', agent: 'Coordinator', action: 'Room 507 marked blocked', confidence: '—', approval: 'Deterministic', state: 'Blocked', policy: 'OOO not sellable', outcome: 'Daniel Kim case blocked' },
       { time: '14:03', event: 'Recovery search', agent: 'Exception Agent', action: 'Finds recovery paths', confidence: '—', approval: 'Advisory', state: 'Re-planning required', policy: 'Exception pack', outcome: 'Alternative suite search started' },
@@ -72,7 +72,7 @@ export const simulations: Record<string, { label: string; steps: SimStep[] }> = 
     ],
   },
   inspection: {
-    label: 'Failed inspection',
+    label: 'Sofia · 14:00 inspection',
     steps: [
       { time: '13:18', event: 'Inspection fail', agent: 'Task Agent', action: 'Room 225 failed: minibar + bathroom', confidence: '—', approval: 'Evidence', state: 'At risk', policy: 'Fail creates rework traces', outcome: 'Rework traces opened' },
       { time: '13:19', event: 'Impact', agent: 'Exception Agent', action: 'Predicted miss on Sofia 14:00 unless recovered', confidence: '76%', approval: 'Advisory', state: 'At risk', policy: 'Arrival promise', outcome: 'Recovery options ranked' },

@@ -4,6 +4,7 @@ import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis
 import { forecast } from '../data/mock'
 import { useStore } from '../state/Store'
 import { GuestCard } from '../components/cases/GuestCard'
+import { KindBadge } from '../components/ui/WorkKind'
 import type { ReadinessStatus } from '../types'
 
 const columns: { key: ReadinessStatus; title: string; hint: string }[] = [
@@ -87,7 +88,7 @@ export function ArrivalReadiness() {
           <div className="space-y-3">
             <Rec
               icon={<Clock size={14} />}
-              text="Move Kiara Garcia to Room 418: correct category, ready now, cot possible, no downstream conflict. Confidence 92%."
+              text="Kiara · 418 over dirty 412. Same Deluxe King, already clean, cot possible. 92%. Room change still needs you."
               onClick={() => {
                 approveMaya()
                 select('maya')
@@ -96,13 +97,13 @@ export function ArrivalReadiness() {
             />
             <Rec
               icon={<AlertTriangle size={14} />}
-              text="Reassign inspection for Room 225 to protect Sofia Garcia’s 14:00 promise"
+              text="Sofia · 14:00 will miss if inspection stays unassigned. Priya S. is free on Floor 2. Ready message already locked."
               onClick={() => select('sofia')}
               action="Open Sofia"
             />
             <Rec
               icon={<ShieldAlert size={14} />}
-              text="Escalate Room 507 maintenance; alternative suite 510 is available"
+              text="Daniel · 507 will miss 15:00. 510 is an inspected suite. Suite moves never auto-run."
               onClick={() => select('daniel')}
               action="Open Daniel"
             />
@@ -117,9 +118,9 @@ export function ArrivalReadiness() {
             <p className="text-xs text-muted">Arrivals that can still miss a verified ready time. Recover here; do not invent a guest promise.</p>
           </div>
         </div>
-        <div className="grid gap-2 md:grid-cols-3">
+        <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-4">
             {cases
-            .filter((c) => ['maya', 'daniel', 'sofia'].includes(c.id) && c.status !== 'ready')
+            .filter((c) => ['maya', 'daniel', 'sofia', 'olivia'].includes(c.id) && c.status !== 'ready')
             .map((c) => (
               <button
                 key={c.id}
@@ -172,7 +173,11 @@ function Rec({
 }) {
   return (
     <div className="rounded-xl border border-line bg-canvas p-3">
-      <div className="mb-2 flex items-center gap-2 text-info">{icon}<span className="text-[11px] font-bold tracking-wide uppercase">Recommendation</span></div>
+      <div className="mb-2 flex items-center gap-2 text-ai">
+        {icon}
+        <span className="text-[11px] font-bold tracking-wide uppercase">AI recommendation</span>
+        <KindBadge kind="ai" />
+      </div>
       <p className="text-sm leading-relaxed">{text}</p>
       <button onClick={onClick} className="mt-2 text-xs font-semibold text-navy underline-offset-2 hover:underline">
         {action}

@@ -25,6 +25,7 @@ export function ExperienceJourney({ c }: { c: ReadinessCase }) {
     <section className="rounded-2xl border border-line p-4">
       <div className="mb-1 text-[11px] font-bold tracking-[0.08em] text-muted uppercase">From risk to ready</div>
       <h3 className="text-sm font-semibold">One arrival, orchestrated end-to-end</h3>
+      <p className="mt-1 text-[11px] text-muted">Purple sparkle = AI reasoned. Green cog = already automated. You approve the room change.</p>
       <div className="mt-3 grid grid-cols-5 gap-1.5">
         {steps.map((s, i) => {
           const done = communicateDone || i < currentIdx

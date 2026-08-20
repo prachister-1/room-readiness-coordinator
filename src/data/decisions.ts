@@ -25,6 +25,7 @@ export const initialDecisions: DecisionItem[] = [
     autoEligible: false,
     autoReason: 'Room assignment changes stay with the duty manager, including same-category moves.',
   },
+  {
     id: 'd-daniel',
     title: 'Approve room reallocation for Daniel Kim',
     caseId: 'daniel',

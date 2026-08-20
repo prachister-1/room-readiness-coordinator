@@ -16,6 +16,8 @@
   --color-info: #2b6cb0;
   --color-info-soft: #eaf3fb;
   --color-idle: #8b95a5;
+  --color-ai: #6b4ce6;
+  --color-ai-soft: #f3efff;
 }
 
 html,
@@ -59,4 +61,20 @@ body {
 
 .agent-pulse {
   animation: agentPulse 3.2s ease-in-out infinite;
+}
+
+@keyframes aiSpark {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(0.86);
+  }
+}
+
+.ai-spark {
+  animation: aiSpark 1.8s ease-in-out infinite;
 }

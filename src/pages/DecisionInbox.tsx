@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useStore } from '../state/Store'
 import { confidenceBand } from '../lib/promise'
 import { Pill } from '../components/ui/Badge'
+import { KindBadge } from '../components/ui/WorkKind'
 import type { DecisionItem, DecisionStatus } from '../types'
 
 const tabs: { id: string; label: string; match: (d: DecisionItem) => boolean }[] = [
@@ -94,10 +95,15 @@ export function DecisionInbox() {
               {d.impact}
             </p>
             <div className="mt-3 grid gap-3 md:grid-cols-2">
-              <p className="text-sm">
+              <div className="text-sm">
+                <div className="mb-1.5 flex flex-wrap items-center gap-1.5">
+                  <KindBadge kind="ai" />
+                  <KindBadge kind="auto" />
+                  {d.autoEligible ? null : <KindBadge kind="human" />}
+                </div>
                 <span className="font-semibold">Recommended by: </span>
                 {d.agents}
-              </p>
+              </div>
               <p className="text-sm">
                 <span className="font-semibold">Confidence: </span>
                 {d.confidence}% · {confidenceBand(d.confidence)?.label}
