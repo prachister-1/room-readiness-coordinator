@@ -11,7 +11,7 @@ export function AgentOrchestration() {
   const { automatedToday, decisions, autonomyMode, runBoundedAutomation } = useStore()
   const awaiting = decisions.filter((d) => d.status === 'open').length
   const [openId, setOpenId] = useState<string | null>(null)
-  const [sim, setSim] = useState<keyof typeof simulations>('blocked')
+  const [sim, setSim] = useState<keyof typeof simulations>('special')
   const [step, setStep] = useState(-1)
   const [running, setRunning] = useState(false)
   const agent = specialistAgents.find((a) => a.id === openId)
@@ -39,7 +39,7 @@ export function AgentOrchestration() {
         <div className="text-[11px] font-bold tracking-[0.14em] text-ready uppercase">Control plane</div>
         <h1 className="mt-1 text-3xl font-semibold tracking-tight">Agent Orchestration</h1>
         <p className="mt-1 max-w-3xl text-sm text-muted">
-          The Room Readiness Coordinator is the parent agent. Specialists recommend or produce evidence. Only the Coordinator changes overall readiness state — and only then may Messaging speak to the guest.
+          AI reasons. Mews executes. The Coordinator owns the outcome — Observe, Reason, Plan, Act, Verify, Re-plan.
         </p>
       </div>
 
@@ -74,7 +74,7 @@ export function AgentOrchestration() {
 
         <div className="relative mx-auto mt-1 hidden h-10 max-w-5xl xl:block" aria-hidden>
           <svg className="h-full w-full" viewBox="0 0 1000 40" preserveAspectRatio="none">
-            {[100, 300, 500, 700, 900].map((x) => (
+            {[125, 375, 625, 875].map((x) => (
               <g key={x}>
                 <line x1="500" y1="0" x2={x} y2="40" stroke="#14805c" strokeWidth="1.5" strokeDasharray="4 4" />
                 <circle cx={x} cy="40" r="3" fill="#14805c" />
@@ -83,7 +83,7 @@ export function AgentOrchestration() {
           </svg>
         </div>
 
-        <div className="relative mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+        <div className="relative mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {specialistAgents.map((a) => (
             <button
               key={a.id}

@@ -96,7 +96,7 @@ export function GuestMessages() {
           </div>
         )}
         {c.id === 'maya' && c.message.status === 'sent' && (
-          <p className="mt-4 text-sm text-ready">Sent at 11:43 after Room 412 was verified ready. Feather-free preference referenced from the approved SOP.</p>
+          <p className="mt-4 text-sm text-ready">Sent after Room 418 was verified ready. Cot and inspection evidence are on the case. Ready copy was locked until then.</p>
         )}
       </section>
     </div>

@@ -11,14 +11,15 @@ export function ShiftHandover() {
     select(id)
   }
   const pending = handoverAcks.filter((a) => !a.acknowledged).length
-  const unresolved = cases.filter((c) => c.status !== 'ready' && ['daniel', 'sofia', 'olivia', 'samira', 'james'].includes(c.id))
+  const unresolved = cases.filter((c) => c.status !== 'ready' && ['maya', 'daniel', 'sofia', 'olivia', 'samira'].includes(c.id))
+  const maya = cases.find((c) => c.id === 'maya')
   const promises = [
     {
       guest: 'Kiara Garcia',
-      text: '“Your room is ready earlier than expected.”',
-      sent: '11:43',
-      status: 'Verified ready · guest notified',
-      risk: 'Low',
+      text: maya?.message.status === 'sent' ? '“Great news! Your room is ready earlier. Room 418 is ready for you.”' : 'No guest-ready message. Front Desk notified only. 418 held pending approval.',
+      sent: maya?.message.status === 'sent' ? 'Sent' : 'Not sent',
+      status: maya?.status === 'ready' ? `Verified ready · Room ${maya.roomNumber}` : maya?.roomNumber === '418' ? 'In preparation on 418 · cot / inspection' : 'At risk · 412 dirty · 418 recommended',
+      risk: maya?.message.status === 'sent' ? 'Low' : 'High',
     },
     {
       guest: 'Daniel Kim',

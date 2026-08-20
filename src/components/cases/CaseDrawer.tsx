@@ -5,6 +5,7 @@ import { useStore } from '../../state/Store'
 import { StatusBadge, Pill } from '../ui/Badge'
 import { ArrivalPromisePanel, EvidencePack } from '../readiness/ArrivalPromise'
 import { CaseStateMachine } from '../readiness/StateMachine'
+import { ExperienceJourney } from '../readiness/ExperienceJourney'
 import { traceClass } from '../../lib/status'
 
 export function CaseDrawer() {
@@ -87,9 +88,36 @@ export function CaseDrawer() {
           ) : (
             <>
               <CaseStateMachine c={c} />
+              {c.id === 'maya' && <ExperienceJourney c={c} />}
               <ArrivalPromisePanel c={c} />
               <EvidencePack c={c} />
               <Timeline c={c} />
+
+              {c.id === 'maya' && c.roomNumber === '412' && !c.recommendation?.approved && <MayaRecovery />}
+              {c.id === 'maya' && c.roomNumber === '418' && c.status !== 'ready' && !c.checks.find((k) => k.id === 'k2')?.complete && (
+                <ActionCard tone="info" title="Verify before communicating">
+                  <p className="mb-3 text-sm">418 is assigned and already clean. Install the cot, then inspect. Do not tell the guest the room is ready yet.</p>
+                  <button className="rounded-lg bg-info px-3 py-2 text-sm font-semibold text-white" onClick={store.completeMayaCot}>
+                    Mark cot installed
+                  </button>
+                </ActionCard>
+              )}
+              {c.id === 'maya' && c.inspectionCompletable && (
+                <ActionCard tone="info" title="Inspection in progress">
+                  <p className="mb-3 text-sm">Cot is verified on 418. When the supervisor signs off, the guest-ready template unlocks.</p>
+                  <button className="rounded-lg bg-info px-3 py-2 text-sm font-semibold text-white" onClick={store.completeMayaInspection}>
+                    Mark inspection complete
+                  </button>
+                </ActionCard>
+              )}
+              {c.id === 'maya' && c.status === 'ready' && c.message.status !== 'sent' && (
+                <ActionCard tone="ready" title="Send room ready message">
+                  <p className="mb-3 text-sm whitespace-pre-wrap">{c.message.body}</p>
+                  <button className="rounded-lg bg-ready px-3 py-2 text-sm font-semibold text-white" onClick={() => store.sendReadyMessage('maya')}>
+                    Send room ready message
+                  </button>
+                </ActionCard>
+              )}
 
               {c.id === 'sofia' && c.status === 'at-risk' && !c.recommendation?.approved && <SofiaRecovery />}
               {c.id === 'sofia' && c.inspectionCompletable && <SofiaComplete />}
@@ -128,9 +156,9 @@ export function CaseDrawer() {
                 </ActionCard>
               )}
 
-              {c.status === 'ready' && c.id === 'maya' && (
-                <ActionCard tone="ready" title="Recommended next action">
-                  <p className="text-sm">Guest has been notified. No further action required.</p>
+              {c.status === 'ready' && c.id === 'maya' && c.message.status === 'sent' && (
+                <ActionCard tone="ready" title="Verified outcome">
+                  <p className="text-sm">Guest informed. Room 418 is ready. No further action required.</p>
                 </ActionCard>
               )}
 
@@ -242,6 +270,34 @@ function ActionCard({
       <h3 className="text-sm font-semibold">{title}</h3>
       <div className="mt-2">{children}</div>
     </section>
+  )
+}
+
+function MayaRecovery() {
+  const { approveMaya, keepMaya, selected } = useStore()
+  const c = selected!
+  return (
+    <ActionCard tone="risk" title="Best option found — move guest to Room 418">
+      <p className="text-sm leading-relaxed">{c.recommendation?.body}</p>
+      <ul className="mt-3 list-disc space-y-1 pl-4 text-sm text-muted">
+        <li>Correct category</li>
+        <li>Ready now</li>
+        <li>Cot possible</li>
+        <li>No downstream conflict</li>
+      </ul>
+      <p className="mt-2 text-xs font-semibold text-info">Confidence {c.recommendation?.confidence ?? '92%'}</p>
+      <p className="mt-2 text-xs text-muted">
+        Task Agent already created a priority clean and cot task, notified Front Desk, and held 418. Changing the assigned room still needs your approval.
+      </p>
+      <div className="mt-4 flex flex-wrap gap-2">
+        <button className="rounded-lg bg-navy px-3 py-2 text-sm font-semibold text-white" onClick={approveMaya}>
+          Approve move to 418
+        </button>
+        <button className="rounded-lg border border-line bg-white px-3 py-2 text-sm font-medium" onClick={keepMaya}>
+          Keep Room 412
+        </button>
+      </div>
+    </ActionCard>
   )
 }
 

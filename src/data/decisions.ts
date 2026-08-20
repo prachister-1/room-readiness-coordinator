@@ -2,6 +2,29 @@ import type { DecisionItem, HandoverAck } from '../types'
 
 export const initialDecisions: DecisionItem[] = [
   {
+    id: 'd-maya',
+    title: 'Approve room change for Kiara Garcia',
+    caseId: 'maya',
+    guestName: 'Kiara Garcia',
+    arrival: '12:00',
+    impact: '12:00 early arrival will miss the promise if she stays on dirty Room 412',
+    agents: 'Allocation Agent + Task Agent + Exception Agent',
+    confidence: 92,
+    why: 'Room 418 is the same Deluxe King category, is already clean, is unassigned, can take a cot, and has no downstream conflict.',
+    policy: 'Changing an assigned room requires duty-manager approval. Agents may detect, create tasks, notify Front Desk, and hold an alternative — they may not move the guest alone.',
+    recommendation: 'Move guest to Room 418',
+    alternatives: ['Keep Room 412 and rush the clean', 'Escalate to duty manager'],
+    actions: [
+      { id: 'approve', label: 'Approve move to 418', kind: 'approve' },
+      { id: 'keep', label: 'Keep Room 412', kind: 'reject' },
+      { id: 'escalate', label: 'Escalate', kind: 'escalate' },
+    ],
+    category: 'room-allocation',
+    severity: 'critical',
+    status: 'open',
+    autoEligible: false,
+    autoReason: 'Room assignment changes stay with the duty manager, including same-category moves.',
+  },
     id: 'd-daniel',
     title: 'Approve room reallocation for Daniel Kim',
     caseId: 'daniel',
@@ -33,7 +56,7 @@ export const initialDecisions: DecisionItem[] = [
     guestName: 'Olivia Brown',
     arrival: '12:30',
     impact: 'A 12:30 promise would be untrue until Room 416 inspection verifies',
-    agents: 'Insights Agent + Messaging Agent',
+    agents: 'Allocation Agent + Guest Messaging',
     confidence: 78,
     why: 'Send an expectation-setting message; do not promise room readiness until Room 416 passes final inspection.',
     policy: 'Early-arrival confirmations require verified readiness.',
@@ -81,7 +104,7 @@ export const initialDecisions: DecisionItem[] = [
     guestName: 'Sofia Garcia',
     arrival: '14:00',
     impact: '14:00 promise is at risk if inspection stays unassigned',
-    agents: 'Trace Agent + Exception Agent',
+    agents: 'Task Agent + Exception Agent',
     confidence: 81,
     why: 'Priya S. is available on Floor 2. Reassigning the inspection trace is reversible and stays inside SOP.',
     policy: 'Trace re-priority within SOP may auto-run in bounded auto-execution.',
@@ -100,6 +123,7 @@ export const initialDecisions: DecisionItem[] = [
 ]
 
 export const initialHandoverAcks: HandoverAck[] = [
+  { id: 'ack-maya', caseId: 'maya', label: 'Kiara Garcia — 12:00 early arrival. Room 412 is dirty. 418 is held pending approval. Do not tell the guest the room is ready.', acknowledged: false },
   { id: 'ack-daniel', caseId: 'daniel', label: 'Daniel Kim — Suite 510 still needs supervisor inspection before 15:00', acknowledged: false },
   { id: 'ack-sofia', caseId: 'sofia', label: 'Sofia Garcia — 14:00 promise is at risk until inspection verifies', acknowledged: false },
   { id: 'ack-olivia', caseId: 'olivia', label: 'Olivia Brown — do not confirm 12:30 until Room 416 is verified', acknowledged: false },

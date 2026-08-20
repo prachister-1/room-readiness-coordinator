@@ -14,7 +14,7 @@ const columns: { key: ReadinessStatus; title: string; hint: string }[] = [
 ]
 
 export function ArrivalReadiness() {
-  const { cases, search, select, assignOlivia } = useStore()
+  const { cases, search, select, approveMaya } = useStore()
   const q = search.trim().toLowerCase()
   const filtered = cases.filter((c) =>
     !q ||
@@ -26,7 +26,7 @@ export function ArrivalReadiness() {
   const kpis = [
     { n: '86', l: 'Arrivals today' },
     { n: '71', l: 'Rooms verified ready' },
-    { n: '9', l: 'At risk' },
+    { n: '8', l: 'At risk' },
     { n: '3', l: 'Blocked' },
     { n: '82%', l: 'Ready by promised arrival' },
     { n: '52 min', l: 'Average turnaround' },
@@ -87,16 +87,16 @@ export function ArrivalReadiness() {
           <div className="space-y-3">
             <Rec
               icon={<Clock size={14} />}
-              text="Assign Room 416 to Olivia Brown: inspected, matches booking and supports 12:30 arrival"
+              text="Move Kiara Garcia to Room 418: correct category, ready now, cot possible, no downstream conflict. Confidence 92%."
               onClick={() => {
-                assignOlivia()
-                select('olivia')
+                approveMaya()
+                select('maya')
               }}
-              action="Assign 416"
+              action="Approve 418"
             />
             <Rec
               icon={<AlertTriangle size={14} />}
-              text="Reassign cleaning trace for Room 225 to available attendant to protect Sofia Garcia’s 14:00 promise"
+              text="Reassign inspection for Room 225 to protect Sofia Garcia’s 14:00 promise"
               onClick={() => select('sofia')}
               action="Open Sofia"
             />
@@ -118,8 +118,8 @@ export function ArrivalReadiness() {
           </div>
         </div>
         <div className="grid gap-2 md:grid-cols-3">
-          {cases
-            .filter((c) => ['olivia', 'sofia', 'daniel', 'james', 'samira'].includes(c.id) && c.status !== 'ready')
+            {cases
+            .filter((c) => ['maya', 'daniel', 'sofia'].includes(c.id) && c.status !== 'ready')
             .map((c) => (
               <button
                 key={c.id}

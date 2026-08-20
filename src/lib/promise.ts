@@ -20,11 +20,11 @@ const seed: Record<string, Partial<ArrivalPromise>> = {
   maya: {
     standardCheckIn: '15:00',
     requestedArrival: '12:00',
-    predictedReady: '11:40',
-    predictedConfidence: 96,
-    currentPromise: 'Early check-in confirmed',
-    verifiedReadyAt: '11:42',
-    phase: 'verified',
+    predictedReady: '11:50',
+    predictedConfidence: 92,
+    currentPromise: 'Early check-in requested — Room 412 is not ready. No guest promise sent.',
+    verifiedReadyAt: null,
+    phase: 'at-risk',
   },
   daniel: {
     standardCheckIn: '15:00',

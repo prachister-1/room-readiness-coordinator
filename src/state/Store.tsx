@@ -1,5 +1,5 @@
 import { createContext, useContext, useMemo, useReducer, type ReactNode } from 'react'
-import { hkTasks as seedTasks, initialCases, rooms as seedRooms } from '../data/mock'
+import { hkTasks as seedTasks, initialCases, KIARA_READY_MESSAGE, rooms as seedRooms } from '../data/mock'
 import { initialDecisions, initialHandoverAcks } from '../data/decisions'
 import type { AutonomyMode, DecisionItem, HandoverAck, HkTask, ReadinessCase, Role, RoomRecord, Toast } from '../types'
 
@@ -129,6 +129,10 @@ interface StoreValue extends State {
   approveDaniel: () => void
   keepDaniel: () => void
   contactDaniel: () => void
+  approveMaya: () => void
+  keepMaya: () => void
+  completeMayaCot: () => void
+  completeMayaInspection: () => void
   assignOlivia: () => void
   startTask: (id: string) => void
   completeTask: (id: string) => void
@@ -315,9 +319,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
               ...c,
               nextAction: 'Guest notified',
               message: { ...c.message, status: 'sent', safeToSend: true, approvalLabel: 'Safe to send: readiness verified' },
-              timeline: c.timeline.some((t) => t.label.includes('Guest message'))
-                ? c.timeline.map((t) => (t.label.includes('Guest message') ? { ...t, complete: true, time: now() } : t))
-                : [...c.timeline, { id: 'msg', label: 'Guest message sent', time: now(), complete: true }],
+              timeline: c.timeline.some((t) => /guest (message|informed)/i.test(t.label))
+                ? c.timeline.map((t) =>
+                    /guest (message|informed)/i.test(t.label) ? { ...t, complete: true, time: now() } : t,
+                  )
+                : [...c.timeline, { id: 'msg', label: 'Guest informed', time: now(), complete: true }],
             },
             'Sent room-ready message',
             'All required room-readiness checks complete',
@@ -478,7 +484,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           source: 'coordinator',
         })
         toast('Daniel Kim moved to 510. New housekeeping trace and holding guest message are live.')
-        closeDecision('d-daniel', 'approved', 'Reallocated 507 → 510. Trace Agent copied relevant prep.')
+        closeDecision('d-daniel', 'approved', 'Reallocated 507 → 510. Task Agent copied relevant prep.')
       },
       keepDaniel: () => {
         patch('daniel', (c) =>
@@ -494,6 +500,194 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       contactDaniel: () => {
         dispatch({ type: 'select', id: 'daniel' })
         toast('Opened Daniel Kim’s case with the holding message draft.')
+      },
+      approveMaya: () => {
+        if (!guardWrite()) return
+        patch('maya', (c) =>
+          addAudit(
+            {
+              ...c,
+              roomNumber: '418',
+              floor: 4,
+              status: 'in-preparation',
+              statusDetail: 'Moved to Room 418 · cot and inspection still required',
+              riskReason: '418 held and assigned · cot not yet verified',
+              tasksComplete: 2,
+              tasksTotal: 4,
+              nextAction: 'Install cot, then inspect',
+              whyThisRoom:
+                'Room 418 matches the booked Deluxe King, is already clean, was unassigned, can take a cot, and has no downstream conflict. Cleaning is complete; cot and inspection still block any guest-ready message.',
+              requirements: c.requirements.map((r) =>
+                r.id === 'r1' ? { ...r, met: true } : r,
+              ),
+              checks: c.checks.map((k) => (k.id === 'k1' ? { ...k, complete: true } : k)),
+              timeline: c.timeline.map((t) =>
+                t.id === 't4' ? { ...t, time: now(), complete: true } : t,
+              ),
+              traces: [
+                { ...c.traces[0], status: 'cancelled', evidence: 'Closed for this guest — 412 returned to inventory', roomNumber: '412' },
+                {
+                  id: 'tr-418-cot',
+                  caseId: 'maya',
+                  name: 'Cot delivery',
+                  department: 'Housekeeping',
+                  owner: 'Anna K.',
+                  status: 'in-progress',
+                  dueTime: '11:50',
+                  evidence: 'Copied to 418 after approval',
+                  roomNumber: '418',
+                },
+                { ...c.traces[2], evidence: '418 now assigned to Kiara Garcia', roomNumber: '418' },
+                {
+                  id: 'tr-418-inspect',
+                  caseId: 'maya',
+                  name: 'Final room inspection',
+                  department: 'Supervisor',
+                  owner: 'Priya S.',
+                  status: 'not-started',
+                  dueTime: '11:55',
+                  evidence: 'Blocked on cot setup',
+                  roomNumber: '418',
+                },
+              ],
+              recommendation: c.recommendation ? { ...c.recommendation, approved: true } : undefined,
+              message: {
+                ...c.message,
+                status: 'draft',
+                safeToSend: false,
+                approvalLabel: 'Awaiting operational confirmation',
+              },
+            },
+            'Approved room change 412 → 418',
+            '418 same category, ready now, cot possible, no downstream conflict',
+          ),
+        )
+        patchRoom('412', {
+          status: 'cleaning',
+          note: 'Released from Kiara Garcia · dirty turn continues for inventory',
+          assignedTo: undefined,
+        })
+        patchRoom('418', {
+          status: 'inspection',
+          note: 'Assigned to Kiara Garcia · cot pending, then inspect',
+          assignedTo: 'Kiara Garcia',
+        })
+        upsertTask({
+          id: 'hk-cot',
+          roomNumber: '418',
+          title: 'Deliver cot and verify setup',
+          action: 'Install the travel cot in Room 418, lock the wheels, and photograph the setup.',
+          dueTime: '11:50',
+          status: 'due',
+          why: 'Duty manager moved Kiara Garcia from dirty 412 to clean 418. Cot must be verified before inspection and before any guest-ready message.',
+          items: ['Travel cot', 'Cot linen', 'Safety card'],
+          checklist: [
+            { id: 'c1', label: 'Cot assembled', complete: false },
+            { id: 'c2', label: 'Linen fitted', complete: false },
+            { id: 'c3', label: 'Photo uploaded', complete: false },
+          ],
+          source: 'coordinator',
+        })
+        toast('Kiara Garcia moved to 418. Cot task is on Housekeeping. Guest-ready message stays locked.')
+        closeDecision('d-maya', 'approved', 'Moved 412 → 418. Cot and inspection still required.')
+      },
+      keepMaya: () => {
+        patch('maya', (c) =>
+          addAudit(
+            { ...c, nextAction: 'Rush clean 412 · cot still required' },
+            'Kept Room 412',
+            'Duty manager declined the 418 move; 412 turn stays the plan',
+          ),
+        )
+        toast('Kept Room 412. Priority clean and cot stay on 412. Guest-ready message stays locked.')
+        closeDecision('d-maya', 'rejected', 'Kept Room 412. Rush clean continues.')
+      },
+      completeMayaCot: () => {
+        const current = state.cases.find((c) => c.id === 'maya')
+        if (current?.checks.find((k) => k.id === 'k2')?.complete) return
+        patch('maya', (c) => {
+          if (c.checks.find((k) => k.id === 'k2')?.complete) return c
+          return addAudit(
+            {
+              ...c,
+              inspectionCompletable: true,
+              nextAction: 'Complete inspection',
+              tasksComplete: Math.min(c.tasksTotal, c.tasksComplete + 1),
+              requirements: c.requirements.map((r) => (r.id === 'r2' ? { ...r, met: true } : r)),
+              checks: c.checks.map((k) => (k.id === 'k2' ? { ...k, complete: true } : k)),
+              timeline: c.timeline.map((t) => (t.id === 't5' ? { ...t, time: now(), complete: true } : t)),
+              traces: c.traces.map((t) =>
+                t.name.toLowerCase().includes('cot')
+                  ? { ...t, status: 'complete', evidence: 'Cot installed · photo attached', roomNumber: c.roomNumber ?? t.roomNumber }
+                  : t.name.toLowerCase().includes('inspection')
+                    ? { ...t, status: 'in-progress', evidence: 'Unblocked — cot complete', owner: 'Priya S.' }
+                    : t,
+              ),
+            },
+            'Cot installed',
+            `Travel cot verified in Room ${c.roomNumber}`,
+            'Anna K.',
+          )
+        })
+        dispatch({
+          type: 'patch-task',
+          id: 'hk-cot',
+          patch: {
+            status: 'complete',
+            checklist: [
+              { id: 'c1', label: 'Cot assembled', complete: true },
+              { id: 'c2', label: 'Linen fitted', complete: true },
+              { id: 'c3', label: 'Photo uploaded', complete: true },
+            ],
+          },
+        })
+        toast('Cot verified. Inspection can start. Guest-ready message stays locked.')
+      },
+      completeMayaInspection: () => {
+        patch('maya', (c) =>
+          addAudit(
+            {
+              ...c,
+              status: 'ready',
+              statusDetail: `Verified at ${now()}`,
+              verifiedAt: now(),
+              riskReason: '418 verified ready',
+              tasksComplete: 4,
+              nextAction: 'Send room ready message',
+              inspectionCompletable: false,
+              checks: c.checks.map((k) => ({ ...k, complete: true })),
+              timeline: c.timeline.map((t) =>
+                t.id === 't6' || t.id === 't7' ? { ...t, time: now(), complete: true } : t,
+              ),
+              traces: c.traces.map((t) =>
+                t.status === 'cancelled'
+                  ? t
+                  : { ...t, status: 'complete', evidence: t.evidence.includes('Closed') ? t.evidence : 'Verified' },
+              ),
+              promise: {
+                standardCheckIn: '15:00',
+                requestedArrival: '12:00',
+                predictedReady: '11:50',
+                predictedConfidence: 92,
+                currentPromise: `Verified ready at ${now()}`,
+                verifiedReadyAt: now(),
+                phase: 'verified',
+              },
+              message: {
+                ...c.message,
+                status: 'draft',
+                safeToSend: true,
+                approvalLabel: 'Safe to send: readiness verified',
+                body: KIARA_READY_MESSAGE,
+              },
+            },
+            'Inspection passed',
+            'Cleaning, cot, inspection, and payment all verified on 418',
+            'Priya S.',
+          ),
+        )
+        patchRoom('418', { status: 'ready', note: 'Verified ready for Kiara Garcia', assignedTo: 'Kiara Garcia' })
+        toast('Room 418 verified ready. Room-ready message is now unlocked.')
       },
       assignOlivia: () => {
         if (!guardWrite()) return
@@ -606,6 +800,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         toast('Task started.')
       },
       completeTask: (id) => {
+        if (id === 'hk-cot') {
+          api.completeMayaCot()
+          return
+        }
         const task = state.hkTasks.find((t) => t.id === id)
         dispatch({
           type: 'patch-task',
@@ -684,6 +882,16 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         toast('Holding message sent. Room-ready copy remains locked.')
       },
       resolveDecision: (id, actionId) => {
+        if (id === 'd-maya') {
+          if (actionId === 'approve') api.approveMaya()
+          else if (actionId === 'keep') api.keepMaya()
+          else {
+            api.keepMaya()
+            closeDecision('d-maya', 'escalated', 'Room-change decision escalated to duty manager.')
+            toast('Kiara Garcia’s room change escalated. 412 and 418 are unchanged.')
+          }
+          return
+        }
         if (id === 'd-daniel') {
           if (actionId === 'approve') api.approveDaniel()
           else if (actionId === 'keep') api.keepDaniel()
@@ -918,7 +1126,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           toast('No eligible auto actions left. Suite and accessibility decisions remain human-owned.')
           return
         }
-        toast(`Auto-ran: ${ran.join('; ')}. Daniel (suite) and Samira (accessibility) stayed in the inbox.`)
+        toast(`Auto-ran: ${ran.join('; ')}. Kiara (room change), Daniel (suite) and Samira (accessibility) stayed in the inbox.`)
       },
     }
     return api

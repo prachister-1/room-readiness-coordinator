@@ -11,12 +11,12 @@ export function Policies() {
   const { autonomyMode, setAutonomyMode, runBoundedAutomation, automatedToday } = useStore()
 
   const matrix = [
-    ['Same-category inspected room move', autonomyMode === 'bounded' ? 'Auto if high confidence' : 'Approve-to-execute', 'Duty manager'],
-    ['Trace create / re-priority within SOP', autonomyMode === 'bounded' ? 'Auto' : 'Auto after plan approval', 'Coordinator'],
+    ['Same-category inspected room move', 'Approve-to-execute if already assigned', 'Duty manager'],
+    ['Task create / re-priority within SOP', autonomyMode === 'bounded' ? 'Auto' : 'Auto after plan approval', 'Coordinator'],
     ['Suite / VIP / accessibility change', 'Escalate only — never auto', 'Duty manager'],
     ['Payment or rate write', 'Forbidden', 'Front office / finance'],
-    ['Room-ready guest message', 'After Coordinator verification', 'Messaging Agent'],
-    ['Holding / expectation message', autonomyMode === 'bounded' ? 'Auto if approved template' : 'Approved templates', 'Messaging Agent'],
+    ['Room-ready guest message', 'After Coordinator verification', 'Guest Messaging (Mews)'],
+    ['Holding / expectation message', autonomyMode === 'bounded' ? 'Auto if approved template' : 'Approved templates', 'Guest Messaging (Mews)'],
   ]
 
   const stops = [
@@ -29,11 +29,11 @@ export function Policies() {
   ]
 
   const sops = [
-    ['Early-arrival pack', 'Priority clean + inspection; do not steal 12:00 inspected inventory'],
-    ['Feather-free / allergy', 'SOP bedding + inspection proof; no clinical data in the task'],
+    ['Early-arrival pack', 'If assigned room is dirty, rank a same-category ready alternative; do not message ready'],
     ['Cot delivery', 'Approved amenity; photo evidence; Ready blocked until complete'],
-    ['Blocked room', 'OOO flag; Exception + Allocation; copy only relevant traces'],
-    ['Failed inspection', 'Rework traces with failure reason; Messaging silent unless guest must be told'],
+    ['Room assignment change', 'Duty manager approval; Task Agent may hold the alternative in advance'],
+    ['Blocked room', 'OOO flag; Exception + Allocation; copy only relevant tasks'],
+    ['Failed inspection', 'Rework tasks with failure reason; Guest Messaging silent unless guest must be told'],
   ]
 
   return (
@@ -66,7 +66,7 @@ export function Policies() {
         <section className="rounded-2xl border border-ready bg-ready-soft p-5">
           <h2 className="text-sm font-semibold">Run eligible automations</h2>
           <p className="mt-1 text-sm text-muted">
-            Will auto-run Olivia’s same-category assignment, an expectation-setting message, and Sofia’s inspection reassignment. Will not move Daniel’s suite or Samira’s accessible room.
+            Will auto-run Olivia’s same-category assignment, an expectation-setting message, and Sofia’s inspection reassignment. Will not move Kiara’s already-assigned room, Daniel’s suite, or Samira’s accessible room.
           </p>
           <button className="mt-3 rounded-lg bg-ready px-4 py-2 text-sm font-semibold text-white" onClick={runBoundedAutomation}>
             Run eligible automations
