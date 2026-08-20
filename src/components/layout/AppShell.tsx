@@ -56,7 +56,7 @@ export function AppShell() {
           Today, 15 August
         </div>
         <button
-          onClick={() => navigate('/inbox')}
+          onClick={() => navigate('/orchestration')}
           className="ml-auto hidden items-center gap-3 rounded-xl border border-line bg-canvas px-3 py-1.5 text-left lg:flex"
         >
           <span className="text-[11px] font-bold tracking-wide text-muted uppercase">Agent activity</span>

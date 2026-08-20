@@ -5,6 +5,7 @@ import { forecast } from '../data/mock'
 import { useStore } from '../state/Store'
 import { GuestCard } from '../components/cases/GuestCard'
 import { KindBadge } from '../components/ui/WorkKind'
+import { WorkflowChips } from '../components/agents/UseCaseBoard'
 import type { ReadinessStatus } from '../types'
 
 const columns: { key: ReadinessStatus; title: string; hint: string }[] = [
@@ -130,6 +131,7 @@ export function ArrivalReadiness() {
                 <div className="text-sm font-semibold">{c.guestName}</div>
                 <div className="text-xs text-muted">Arrival {c.eta} · {c.roomNumber ? `Room ${c.roomNumber}` : 'Unassigned'}</div>
                 <div className="mt-2 text-xs font-medium text-risk">{c.nextAction}</div>
+                <WorkflowChips c={c} />
               </button>
             ))}
         </div>

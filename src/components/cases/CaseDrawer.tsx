@@ -4,10 +4,12 @@ import { Check, Circle, X } from 'lucide-react'
 import { useStore } from '../../state/Store'
 import { StatusBadge, Pill } from '../ui/Badge'
 import { AutoBullet, KindBadge, MagicBullet } from '../ui/WorkKind'
+import { AgentMark } from '../agents/AgentMark'
 import { workKindForAgent } from '../../lib/workKind'
 import { ArrivalPromisePanel, EvidencePack } from '../readiness/ArrivalPromise'
 import { CaseStateMachine } from '../readiness/StateMachine'
 import { ExperienceJourney } from '../readiness/ExperienceJourney'
+import { caseWorkflow } from '../../lib/agentWorkflow'
 import { traceClass } from '../../lib/status'
 
 export function CaseDrawer() {
@@ -80,11 +82,14 @@ export function CaseDrawer() {
               {c.audit.map((a) => (
                 <div key={a.id} className="grid grid-cols-[64px_1fr] gap-3 border-b border-line px-4 py-3 last:border-0">
                   <div className="text-xs text-muted">{a.time}</div>
-                  <div>
-                    <div className="text-sm font-medium">{a.action}</div>
-                    <div className="mt-1 flex flex-wrap items-center gap-1.5">
-                      <KindBadge kind={workKindForAgent(a.actor, a.action, a.reason)} />
-                      <span className="text-xs text-muted">{a.actor} · {a.reason}</span>
+                  <div className="flex gap-2.5">
+                    <AgentMark agent={a.actor} size="sm" />
+                    <div>
+                      <div className="text-sm font-medium">{a.action}</div>
+                      <div className="mt-1 flex flex-wrap items-center gap-1.5">
+                        <KindBadge kind={workKindForAgent(a.actor, a.action, a.reason)} />
+                        <span className="text-xs text-muted">{a.actor} · {a.reason}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -93,7 +98,7 @@ export function CaseDrawer() {
           ) : (
             <>
               <CaseStateMachine c={c} />
-              {c.id === 'maya' && <ExperienceJourney c={c} />}
+              {caseWorkflow(c) && <ExperienceJourney c={c} />}
               <CaseActions />
               <ArrivalPromisePanel c={c} />
               <EvidencePack c={c} />

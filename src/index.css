@@ -78,3 +78,102 @@ body {
 .ai-spark {
   animation: aiSpark 1.8s ease-in-out infinite;
 }
+
+@keyframes agentSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.agent-orb {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 999px;
+  color: white;
+  isolation: isolate;
+  flex-shrink: 0;
+}
+
+.agent-orb-ai {
+  background:
+    radial-gradient(circle at 32% 28%, #d9c8ff 0%, transparent 42%),
+    linear-gradient(160deg, #8b6cf6 0%, #5b35d4 100%);
+  box-shadow:
+    0 0 0 3px rgba(107, 76, 230, 0.14),
+    0 8px 18px rgba(91, 53, 212, 0.28);
+}
+
+.agent-orb-auto {
+  background:
+    radial-gradient(circle at 32% 28%, #c8f0de 0%, transparent 42%),
+    linear-gradient(160deg, #2aa87a 0%, #0f6b4b 100%);
+  box-shadow:
+    0 0 0 3px rgba(20, 128, 92, 0.12),
+    0 8px 18px rgba(15, 107, 75, 0.22);
+}
+
+.agent-orb-human {
+  background:
+    radial-gradient(circle at 32% 28%, #c5d4ea 0%, transparent 42%),
+    linear-gradient(160deg, #3a547c 0%, #0f1f3d 100%);
+  box-shadow:
+    0 0 0 3px rgba(15, 31, 61, 0.1),
+    0 8px 18px rgba(15, 31, 61, 0.2);
+}
+
+.agent-orb-live {
+  box-shadow:
+    0 0 0 4px rgba(107, 76, 230, 0.18),
+    0 0 22px rgba(107, 76, 230, 0.45);
+}
+
+.agent-orb-auto.agent-orb-live {
+  box-shadow:
+    0 0 0 4px rgba(20, 128, 92, 0.16),
+    0 0 22px rgba(20, 128, 92, 0.38);
+}
+
+.agent-orb-human.agent-orb-live {
+  box-shadow:
+    0 0 0 4px rgba(15, 31, 61, 0.12),
+    0 0 18px rgba(15, 31, 61, 0.28);
+}
+
+.agent-ring {
+  position: absolute;
+  inset: -4px;
+  border-radius: 999px;
+  background: conic-gradient(from 90deg, transparent 0 55%, currentColor 70%, transparent 88%);
+  animation: agentSpin 2.2s linear infinite;
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 1.5px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 1.5px));
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+.agent-orb-ai .agent-ring {
+  color: #c4b5ff;
+}
+
+.agent-orb-auto .agent-ring {
+  color: #8ee0c0;
+}
+
+.agent-orb-human .agent-ring {
+  color: #9db0cc;
+}
+
+.agent-bot {
+  position: absolute;
+  right: -3px;
+  bottom: -3px;
+  display: grid;
+  place-items: center;
+  height: 14px;
+  width: 14px;
+  border-radius: 999px;
+  background: #0f1f3d;
+  color: #e8deff;
+  box-shadow: 0 0 0 2px white;
+}

@@ -1,6 +1,7 @@
 import { CheckCircle2, CreditCard, Smartphone, Sparkles } from 'lucide-react'
 import type { ReadinessCase } from '../../types'
 import { StatusBadge } from '../ui/Badge'
+import { WorkflowChips } from '../agents/UseCaseBoard'
 import { useStore } from '../../state/Store'
 
 export function GuestCard({ item }: { item: ReadinessCase }) {
@@ -31,6 +32,7 @@ export function GuestCard({ item }: { item: ReadinessCase }) {
         />
       </div>
       <p className="mt-2 text-xs text-muted">{item.riskReason}</p>
+      <WorkflowChips c={item} />
       <div className="mt-3 flex items-center gap-2 text-muted">
         {item.specialRequest && <Sparkles size={14} className="text-risk" />}
         {item.paymentReady ? <CreditCard size={14} className="text-ready" /> : <CreditCard size={14} className="text-blocked" />}

@@ -25,11 +25,11 @@ const meta: Record<
   },
 }
 
-export function KindBadge({ kind, showHint = false }: { kind: WorkKind; showHint?: boolean }) {
+export function KindBadge({ kind, showHint = false, live = false }: { kind: WorkKind; showHint?: boolean; live?: boolean }) {
   const m = meta[kind]
   return (
-    <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold tracking-wide uppercase ${m.className}`}>
-      <m.Icon size={11} className={kind === 'ai' ? 'ai-spark' : ''} />
+    <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold tracking-wide uppercase ${m.className} ${live ? 'outline outline-offset-1 outline-current/25' : ''}`}>
+      <m.Icon size={11} className={kind === 'ai' || live ? 'ai-spark' : ''} />
       {m.label}
       {showHint && <span className="font-medium normal-case tracking-normal opacity-80">· {m.hint}</span>}
     </span>

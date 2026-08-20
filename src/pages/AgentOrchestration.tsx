@@ -1,14 +1,18 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { coordinatorStats, specialistAgents } from '../data/agents'
 import { simulations } from '../data/simulations'
 import { workKindForAgent } from '../lib/workKind'
 import { KindBadge, WorkKindLegend } from '../components/ui/WorkKind'
+import { UseCaseBoard } from '../components/agents/UseCaseBoard'
+import { AgentMark, AgentIdentity } from '../components/agents/AgentMark'
 import { useStore } from '../state/Store'
 
 const demoSims = ['special', 'blocked', 'inspection', 'early'] as const
 
 export function AgentOrchestration() {
-  const { automatedToday, decisions } = useStore()
+  const { automatedToday, decisions, cases, select } = useStore()
+  const navigate = useNavigate()
   const awaiting = decisions.filter((d) => d.status === 'open').length
   const [openId, setOpenId] = useState<string | null>('allocation')
   const [sim, setSim] = useState<(typeof demoSims)[number]>('special')
@@ -35,18 +39,35 @@ export function AgentOrchestration() {
           <div className="text-[11px] font-bold tracking-[0.14em] text-ready uppercase">Control plane</div>
           <h1 className="mt-1 text-3xl font-semibold tracking-tight">Agent Orchestration</h1>
           <p className="mt-1 max-w-2xl text-sm text-muted">
-            AI ranks and flags. Automation creates tasks and locks ready messages. You approve room changes.
+            Watch specialists work live cases. AI ranks and flags. Automation creates tasks and locks ready messages. You approve room changes.
           </p>
         </div>
         <WorkKindLegend />
       </div>
 
       <section className="rounded-2xl border border-line bg-white p-4">
+        <h2 className="text-sm font-semibold">Working on today’s use cases</h2>
+        <p className="mt-1 text-xs text-muted">Live from Arrival Readiness — not the storyboard. Click a guest to open the case.</p>
+        <div className="mt-3">
+          <UseCaseBoard
+            cases={cases}
+            onOpen={(id) => {
+              navigate('/')
+              select(id)
+            }}
+          />
+        </div>
+      </section>
+
+      <section className="rounded-2xl border border-line bg-white p-4">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line pb-4">
-          <div>
-            <div className="text-[11px] font-bold tracking-[0.12em] text-ready uppercase">Parent</div>
-            <h2 className="text-lg font-semibold">Room Readiness Coordinator</h2>
-            <p className="text-sm text-muted">Owns state. Specialists cannot mark ready or message the guest.</p>
+          <div className="flex items-center gap-3">
+            <AgentMark agent="coordinator" size="lg" />
+            <div>
+              <div className="text-[11px] font-bold tracking-[0.12em] text-ready uppercase">Parent</div>
+              <h2 className="text-lg font-semibold">Room Readiness Coordinator</h2>
+              <p className="text-sm text-muted">Owns state. Specialists cannot mark ready or message the guest.</p>
+            </div>
           </div>
           <div className="flex gap-4 text-center">
             {[
@@ -67,24 +88,19 @@ export function AgentOrchestration() {
             <button
               key={a.id}
               onClick={() => setOpenId(a.id)}
-              className={`rounded-xl border p-3 text-left ${
+              className={`rounded-2xl border p-3 text-left ${
                 openId === a.id ? 'border-ai bg-ai-soft/60' : 'border-line hover:border-ai/40'
               }`}
             >
-              <KindBadge kind={a.kind} />
-              <div className="mt-2 text-sm font-semibold">{a.name}</div>
-              <p className="mt-1 line-clamp-2 text-xs text-muted">{a.currentActions[0]}</p>
+              <AgentIdentity agent={a.id} live={openId === a.id} detail={a.currentActions[0]} />
             </button>
           ))}
         </div>
 
         {agent && (
           <div className="mt-4 rounded-xl bg-canvas p-4">
-            <div className="flex flex-wrap items-center gap-2">
-              <h3 className="text-sm font-semibold">{agent.name}</h3>
-              <KindBadge kind={agent.kind} showHint />
-            </div>
-            <p className="mt-2 text-sm">{agent.example}</p>
+            <AgentIdentity agent={agent.id} live detail={agent.purpose} />
+            <p className="mt-3 text-sm">{agent.example}</p>
             <p className="mt-2 text-xs text-muted">
               Guardrails: {agent.guardrails.join(' · ')}
             </p>
@@ -146,6 +162,7 @@ export function AgentOrchestration() {
                 <div className="w-10 shrink-0 pt-0.5 text-xs font-semibold text-muted">{s.time}</div>
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
+                    <AgentMark agent={s.agent} live={active} size="sm" />
                     <KindBadge kind={kind} />
                     <span className="text-sm font-medium">{s.event}</span>
                     <span className="text-xs text-muted">{s.agent}</span>
