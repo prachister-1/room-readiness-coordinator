@@ -66,7 +66,7 @@ export function ArrivalReadiness() {
                 <XAxis dataKey="hour" tick={{ fontSize: 11, fill: '#8c8c8c' }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 11, fill: '#8c8c8c' }} axisLine={false} tickLine={false} />
                 <Tooltip />
-                <Bar dataKey="promised" fill="#c4c9dd" radius={0} />
+                <Bar dataKey="promised" fill="#d6d1c8" radius={0} />
                 <Bar dataKey="ready" radius={0}>
                   {forecast.map((d) => (
                     <Cell key={d.hour} fill={d.hour === '14:00' ? '#ff83da' : '#000000'} />

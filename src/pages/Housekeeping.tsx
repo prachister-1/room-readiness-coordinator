@@ -28,7 +28,7 @@ export function Housekeeping() {
           <div className="mt-1 text-xl font-semibold">Anna K. — Floor 4</div>
           <div className="mt-2 text-sm text-white/80">Today’s progress: {done} of {hkTasks.length} complete</div>
           <div className="mt-3 h-1.5 overflow-hidden bg-white/15">
-            <div className="h-full bg-lime" style={{ width: `${(done / hkTasks.length) * 100}%` }} />
+            <div className="h-full bg-ai" style={{ width: `${(done / hkTasks.length) * 100}%` }} />
           </div>
         </div>
         <div className="grid gap-0 sm:grid-cols-1">

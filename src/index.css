@@ -18,9 +18,10 @@
   --color-info-soft: #d2f4ff;
   --color-idle: #8c8c8c;
   --color-ai: #ff83da;
-  --color-ai-soft: #f7e1f7;
-  --color-lime: #e8ff5b;
+  --color-ai-soft: #ffc5ee;
   --color-cotton: #ffc5ee;
+  --color-purple: #ff83da;
+  --color-purple-soft: #ffc5ee;
   --radius-lg: 0.5rem;
   --radius-xl: 0.25rem;
   --radius-2xl: 0.25rem;
@@ -110,20 +111,20 @@ body {
 }
 
 .agent-orb-live {
-  box-shadow: 0 0 0 2px #e8ff5b;
+  box-shadow: 0 0 0 2px #ff83da;
 }
 
 .agent-orb-human.agent-orb-live {
   box-shadow:
     inset 0 0 0 1px #000,
-    0 0 0 2px #e8ff5b;
+    0 0 0 2px #ff83da;
 }
 
 .agent-ring {
   position: absolute;
   inset: -3px;
   border-radius: 6px;
-  background: conic-gradient(from 90deg, transparent 0 62%, #e8ff5b 78%, transparent 92%);
+  background: conic-gradient(from 90deg, transparent 0 62%, #ff83da 78%, transparent 92%);
   animation: agentSpin 2.8s linear infinite;
   -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 1.5px));
   mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 1.5px));
@@ -133,5 +134,5 @@ body {
 .agent-orb-ai .agent-ring,
 .agent-orb-auto .agent-ring,
 .agent-orb-human .agent-ring {
-  color: #e8ff5b;
+  color: #ff83da;
 }

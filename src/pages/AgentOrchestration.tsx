@@ -154,7 +154,7 @@ export function AgentOrchestration() {
                 className={`flex gap-3 border px-3 py-2.5 ${
                   active
                     ? kind === 'ai'
-                      ? 'border-ai bg-ai-soft'
+                      ? 'border-navy bg-ai-soft'
                       : kind === 'human'
                         ? 'border-navy bg-white'
                         : 'border-line bg-canvas'
