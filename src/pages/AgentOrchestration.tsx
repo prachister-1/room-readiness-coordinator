@@ -39,7 +39,7 @@ export function AgentOrchestration() {
           <div className="text-[11px] font-bold tracking-[0.14em] text-ready uppercase">Control plane</div>
           <h1 className="mt-1 text-3xl font-semibold tracking-tight">Agent Orchestration</h1>
           <p className="mt-1 max-w-2xl text-sm text-muted">
-            Watch specialists work live cases. AI ranks and flags. Automation creates tasks and locks ready messages. You approve room changes.
+            AI reasons. Mews executes. The Coordinator owns the outcome. Specialists: Allocation, Task, Exception, Trace.
           </p>
         </div>
         <WorkKindLegend />
@@ -66,7 +66,7 @@ export function AgentOrchestration() {
             <div>
               <div className="text-[11px] font-bold tracking-[0.12em] text-ready uppercase">Parent</div>
               <h2 className="text-lg font-semibold">Room Readiness Coordinator</h2>
-              <p className="text-sm text-muted">Owns state. Specialists cannot mark ready or message the guest.</p>
+              <p className="text-sm text-muted">Owns the outcome. Specialists cannot mark ready or message the guest.</p>
             </div>
           </div>
           <div className="flex gap-4 text-center">

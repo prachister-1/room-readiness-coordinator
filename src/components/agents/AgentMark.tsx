@@ -25,18 +25,19 @@ export interface AgentLook {
   id: AgentLookId
   name: string
   short: string
+  role: string
   kind: WorkKind
   Icon: LucideIcon
 }
 
 export const AGENT_LOOK: Record<AgentLookId, AgentLook> = {
-  allocation: { id: 'allocation', name: 'Allocation Agent', short: 'Allocation', kind: 'ai', Icon: Waypoints },
-  exception: { id: 'exception', name: 'Exception Agent', short: 'Exception', kind: 'ai', Icon: Radar },
-  task: { id: 'task', name: 'Task Agent', short: 'Task', kind: 'auto', Icon: ListChecks },
-  trace: { id: 'trace', name: 'Trace Agent', short: 'Trace', kind: 'auto', Icon: ScrollText },
-  messaging: { id: 'messaging', name: 'Guest Messaging', short: 'Messaging', kind: 'auto', Icon: MessageSquare },
-  coordinator: { id: 'coordinator', name: 'Coordinator', short: 'Coordinator', kind: 'auto', Icon: GitBranch },
-  human: { id: 'human', name: 'Duty manager', short: 'You', kind: 'human', Icon: User },
+  allocation: { id: 'allocation', name: 'Allocation Agent', short: 'Allocation', role: 'best room & timing', kind: 'ai', Icon: Waypoints },
+  exception: { id: 'exception', name: 'Exception Agent', short: 'Exception', role: 'risks, escalations', kind: 'ai', Icon: Radar },
+  task: { id: 'task', name: 'Task Agent', short: 'Task', role: 'housekeeping, maintenance, logistics', kind: 'auto', Icon: ListChecks },
+  trace: { id: 'trace', name: 'Trace Agent', short: 'Trace', role: 'audit, explainability', kind: 'auto', Icon: ScrollText },
+  messaging: { id: 'messaging', name: 'Mews Guest Messaging', short: 'Mews messaging', role: 'execute in Mews — not a specialist', kind: 'auto', Icon: MessageSquare },
+  coordinator: { id: 'coordinator', name: 'Room Readiness Coordinator', short: 'Coordinator', role: 'owns the outcome', kind: 'auto', Icon: GitBranch },
+  human: { id: 'human', name: 'Duty manager', short: 'You', role: 'approves room changes', kind: 'human', Icon: User },
 }
 
 export function lookForAgent(name: string): AgentLook {
@@ -123,6 +124,7 @@ export function AgentIdentity({
           <span className="text-sm font-semibold">{look.name}</span>
           <KindBadge kind={look.kind} live={live} />
         </div>
+        <p className="text-[11px] text-muted">{look.role}</p>
         {detail && <p className="mt-0.5 line-clamp-2 text-xs text-muted">{detail}</p>}
       </div>
     </div>

@@ -21,7 +21,7 @@ export const simulations: Record<string, { label: string; steps: SimStep[] }> = 
       { time: '11:03', event: 'Human decision', agent: 'Duty manager', action: 'Approved move to 418', confidence: '—', approval: 'Approved', state: 'Allocation confirmed', policy: 'Approve-to-execute', outcome: '412 → 418' },
       { time: '11:20', event: 'Verify', agent: 'Housekeeping', action: 'Cot installed on 418; cleaning already complete', confidence: '—', approval: 'Evidence', state: 'Awaiting inspection', policy: 'Proof of completion', outcome: 'Cot photo attached' },
       { time: '11:22', event: 'Verify', agent: 'Coordinator', action: 'Cleaning, cot, inspection, payment all passed', confidence: '—', approval: 'Coordinator only', state: 'Room ready', policy: 'Ready only after checks', outcome: 'Guest message unlocked' },
-      { time: '11:23', event: 'Communicate', agent: 'Guest Messaging', action: 'Sent verified ready message for Room 418', confidence: 'Policy-gated', approval: 'Allowed after verify', state: 'Guest notified', policy: 'Never claim ready early', outcome: 'Great news! Your room is ready earlier.' },
+      { time: '11:23', event: 'Communicate', agent: 'Mews Guest Messaging', action: 'Sent verified ready message for Room 418', confidence: 'Policy-gated', approval: 'Allowed after verify', state: 'Guest notified', policy: 'Never claim ready early', outcome: 'Great news! Your room is ready earlier.' },
     ],
   },
   early: {
@@ -33,7 +33,7 @@ export const simulations: Record<string, { label: string; steps: SimStep[] }> = 
       { time: '11:06', event: 'Approval', agent: 'Duty manager', action: 'Approved allocation to 416', confidence: '—', approval: 'Approved', state: 'Allocation confirmed', policy: 'Approve-to-execute', outcome: 'Room 416 assigned' },
       { time: '11:07', event: 'Plan tasks', agent: 'Task Agent', action: 'Created priority turn + inspection on 416', confidence: '91%', approval: 'Auto within SOP', state: 'Preparation planned', policy: 'Early-arrival task pack', outcome: 'Two tasks dispatched to Floor 4' },
       { time: '12:18', event: 'Inspection passed', agent: 'Coordinator', action: 'Verified mandatory checks', confidence: '—', approval: 'Verified', state: 'Room ready', policy: 'Ready only after checks', outcome: 'Messaging unlocked' },
-      { time: '12:19', event: 'Guest update', agent: 'Guest Messaging', action: 'Sent verified room-ready message', confidence: 'Policy-gated', approval: 'Allowed', state: 'Guest notified', policy: 'Ready template', outcome: 'Olivia notified' },
+      { time: '12:19', event: 'Guest update', agent: 'Mews Guest Messaging', action: 'Sent verified room-ready message', confidence: 'Policy-gated', approval: 'Allowed', state: 'Guest notified', policy: 'Ready template', outcome: 'Olivia notified' },
     ],
   },
   blocked: {
@@ -47,8 +47,8 @@ export const simulations: Record<string, { label: string; steps: SimStep[] }> = 
       { time: '14:07', event: 'New traces', agent: 'Task Agent', action: 'Creates 510 inspection and amenity checks', confidence: '90%', approval: 'Auto within SOP', state: 'In preparation', policy: 'Copy relevant traces only', outcome: '507 traces cancelled' },
       { time: '14:22', event: 'Housekeeping', agent: 'Housekeeping', action: 'Inspection complete', confidence: '—', approval: 'Evidence', state: 'Awaiting inspection → Room ready', policy: 'Proof of completion', outcome: '510 inspected' },
       { time: '14:23', event: 'Verify', agent: 'Coordinator', action: 'Verifies mandatory checks', confidence: '—', approval: 'Coordinator only', state: 'Room ready', policy: 'Only Coordinator changes overall state', outcome: 'Ready unlocked' },
-      { time: '14:24', event: 'Draft', agent: 'Guest Messaging', action: 'Drafts room-ready message', confidence: 'Policy-gated', approval: 'Allowed after verify', state: 'Room ready', policy: 'No premature ready claim', outcome: 'Draft queued' },
-      { time: '14:25', event: 'Send', agent: 'Guest Messaging', action: 'Guest message sent', confidence: '—', approval: 'Sent', state: 'Guest notified', policy: 'Ready template', outcome: 'Your suite is ready for check-in' },
+      { time: '14:24', event: 'Draft', agent: 'Mews Guest Messaging', action: 'Drafts room-ready message', confidence: 'Policy-gated', approval: 'Allowed after verify', state: 'Room ready', policy: 'No premature ready claim', outcome: 'Draft queued' },
+      { time: '14:25', event: 'Send', agent: 'Mews Guest Messaging', action: 'Guest message sent', confidence: '—', approval: 'Sent', state: 'Guest notified', policy: 'Ready template', outcome: 'Your suite is ready for check-in' },
     ],
   },
   checkout: {
@@ -68,7 +68,7 @@ export const simulations: Record<string, { label: string; steps: SimStep[] }> = 
       { time: '09:12', event: 'Cluster rooms', agent: 'Allocation Agent', action: 'Floors 4–5 preferred', confidence: '86%', approval: 'Recommend', state: 'Allocation proposed', policy: 'Proximity, not guaranteed', outcome: '11 on 4–5, 1 on 6' },
       { time: '12:40', event: 'Forecast', agent: 'Exception Agent', action: '9 ready, 2 in prep, 1 at risk', confidence: '79%', approval: 'Advisory', state: 'At risk', policy: 'Group together by 15:00', outcome: 'Floor 6 room flagged' },
       { time: '12:42', event: 'Recovery', agent: 'Exception Agent', action: 'Reassign one room from 6 to 5', confidence: '74%', approval: 'Awaiting', state: 'Re-planning required', policy: 'Keep group together if inventory allows', outcome: 'Recommendation queued' },
-      { time: '15:01', event: 'Organiser update', agent: 'Guest Messaging', action: 'Single status to group organiser after verification', confidence: 'Policy-gated', approval: 'Configured', state: 'Guest notified', policy: 'One organiser message', outcome: 'No 12 duplicate SMS' },
+      { time: '15:01', event: 'Organiser update', agent: 'Mews Guest Messaging', action: 'Single status to group organiser after verification', confidence: 'Policy-gated', approval: 'Configured', state: 'Guest notified', policy: 'One organiser message', outcome: 'No 12 duplicate SMS' },
     ],
   },
   inspection: {

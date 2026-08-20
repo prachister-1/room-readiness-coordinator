@@ -56,7 +56,9 @@ function StepCard({ step, doneOverride }: { step: FlowStep; doneOverride: boolea
       <div className={`mt-1.5 text-[10px] font-bold tracking-wide uppercase ${done ? 'text-ready' : active ? 'text-ai' : 'text-muted'}`}>
         {step.title}
       </div>
-      <p className="mt-0.5 hidden text-[10px] leading-snug font-medium sm:block">{step.agent.replace(' Agent', '').replace('Staff evidence', 'You')}</p>
+      <p className="mt-0.5 hidden text-[10px] leading-snug font-medium sm:block">
+        {step.agent.replace(' Agent', '').replace('Room Readiness Coordinator', 'Coordinator').replace('Mews Guest Messaging', 'Mews')}
+      </p>
       <p className="mt-0.5 hidden text-[10px] leading-snug text-muted lg:block">{step.work}</p>
     </div>
   )

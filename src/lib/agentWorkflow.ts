@@ -153,8 +153,8 @@ export function caseWorkflow(c: ReadinessCase): CaseWorkflow | null {
     { id: 'detect', title: 'Detect', agent: 'Exception Agent', kind: 'ai', status: stepStatus('detect', phase, sent), work: m.detect },
     { id: 'reason', title: 'Reason', agent: 'Allocation Agent', kind: 'ai', status: stepStatus('reason', phase, sent), work: m.reason },
     { id: 'act', title: 'Act', agent: 'Task Agent', kind: 'auto', status: stepStatus('act', phase, sent), work: actWork },
-    { id: 'verify', title: 'Verify', agent: 'Staff evidence', kind: 'human', status: stepStatus('verify', phase, sent), work: verifyWork },
-    { id: 'communicate', title: 'Communicate', agent: 'Guest Messaging', kind: 'auto', status: stepStatus('communicate', phase, sent), work: communicateWork },
+    { id: 'verify', title: 'Verify', agent: 'Room Readiness Coordinator', kind: 'auto', status: stepStatus('verify', phase, sent), work: verifyWork },
+    { id: 'communicate', title: 'Communicate', agent: 'Mews Guest Messaging', kind: 'auto', status: stepStatus('communicate', phase, sent), work: communicateWork },
   ]
 
   const waitingOnYou =
@@ -168,19 +168,27 @@ export function caseWorkflow(c: ReadinessCase): CaseWorkflow | null {
             ? c.nextAction
             : undefined
 
-  const workingNow: CaseWorkflow['workingNow'] = []
+  const workingNow: CaseWorkflow['workingNow'] = [
+    { agent: 'Trace Agent', kind: 'auto', action: 'Logging actor, reason, policy, and outcome' },
+  ]
   if (phase === 'act' && !approved) {
-    workingNow.push({ agent: 'Allocation Agent', kind: 'ai', action: m.reason })
-    workingNow.push({ agent: 'Task Agent', kind: 'auto', action: m.act })
-    workingNow.push({ agent: 'You', kind: 'human', action: c.nextAction })
+    workingNow.unshift(
+      { agent: 'Exception Agent', kind: 'ai', action: m.detect },
+      { agent: 'Allocation Agent', kind: 'ai', action: m.reason },
+      { agent: 'Task Agent', kind: 'auto', action: m.act },
+      { agent: 'You', kind: 'human', action: c.nextAction },
+    )
   } else if (phase === 'verify') {
-    workingNow.push({ agent: 'Task Agent', kind: 'auto', action: 'Traces copied · ready message still locked' })
-    workingNow.push({ agent: 'You', kind: 'human', action: c.nextAction })
+    workingNow.unshift(
+      { agent: 'Task Agent', kind: 'auto', action: 'Traces in flight · ready message locked' },
+      { agent: 'Room Readiness Coordinator', kind: 'auto', action: 'Waiting on staff evidence before ready' },
+      { agent: 'You', kind: 'human', action: c.nextAction },
+    )
   } else if (phase === 'communicate' && !sent) {
-    workingNow.push({ agent: 'Guest Messaging', kind: 'auto', action: 'Ready template unlocked' })
-    workingNow.push({ agent: 'You', kind: 'human', action: 'Send room ready message' })
-  } else if (sent) {
-    workingNow.push({ agent: 'Trace Agent', kind: 'auto', action: 'Outcome logged · no further action' })
+    workingNow.unshift(
+      { agent: 'Room Readiness Coordinator', kind: 'auto', action: 'Verified ready — Mews messaging unlocked' },
+      { agent: 'You', kind: 'human', action: 'Send room ready message' },
+    )
   }
 
   return {
@@ -206,7 +214,7 @@ export function liveAgentBoard(cases: ReadinessCase[]) {
     { id: 'allocation', name: 'Allocation Agent', kind: 'ai', items: [] },
     { id: 'task', name: 'Task Agent', kind: 'auto', items: [] },
     { id: 'exception', name: 'Exception Agent', kind: 'ai', items: [] },
-    { id: 'human', name: 'You', kind: 'human', items: [] },
+    { id: 'trace', name: 'Trace Agent', kind: 'auto', items: [] },
   ]
 
   for (const w of workflows) {
@@ -218,9 +226,7 @@ export function liveAgentBoard(cases: ReadinessCase[]) {
     if (w.phase === 'verify') {
       byAgent[1].items.push({ guest: w.guestName, action: 'Traces in flight · ready message locked', caseId: w.caseId })
     }
-    if (w.waitingOnYou) {
-      byAgent[3].items.push({ guest: w.guestName, action: w.waitingOnYou, caseId: w.caseId })
-    }
+    byAgent[3].items.push({ guest: w.guestName, action: 'Audit trail open', caseId: w.caseId })
   }
 
   return { workflows, byAgent }

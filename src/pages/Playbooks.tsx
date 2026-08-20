@@ -15,8 +15,8 @@ const workflow = [
   { title: 'Detect', kind: 'ai' as const, agent: 'Exception' },
   { title: 'Reason', kind: 'ai' as const, agent: 'Allocation' },
   { title: 'Act', kind: 'auto' as const, agent: 'Task' },
-  { title: 'Verify', kind: 'human' as const, agent: 'You / staff' },
-  { title: 'Communicate', kind: 'auto' as const, agent: 'Messaging' },
+  { title: 'Verify', kind: 'auto' as const, agent: 'Coordinator' },
+  { title: 'Communicate', kind: 'auto' as const, agent: 'Mews messaging' },
 ]
 
 export function Playbooks() {
@@ -28,7 +28,7 @@ export function Playbooks() {
         <div className="text-[11px] font-bold tracking-[0.14em] text-ready uppercase">Reusable workflows</div>
         <h1 className="mt-1 text-3xl font-semibold tracking-tight">Operational Playbooks</h1>
         <p className="mt-1 max-w-3xl text-sm text-muted">
-          Each playbook is the same five-step agent workflow: Exception detects, Allocation reasons, Task acts, you verify, messaging only after ready.
+          Each playbook uses the same specialists as the architecture slide: Allocation, Task, Exception, Trace. Guest messaging executes in Mews after the Coordinator verifies.
         </p>
       </div>
       <div className="grid gap-4 xl:grid-cols-2">

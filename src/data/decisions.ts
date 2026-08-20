@@ -57,7 +57,7 @@ export const initialDecisions: DecisionItem[] = [
     guestName: 'Olivia Brown',
     arrival: '12:30',
     impact: 'A 12:30 promise would be untrue until Room 416 inspection verifies',
-    agents: 'Allocation Agent + Guest Messaging',
+    agents: 'Allocation Agent + Mews Guest Messaging',
     confidence: 78,
     why: 'Send an expectation-setting message; do not promise room readiness until Room 416 passes final inspection.',
     policy: 'Early-arrival confirmations require verified readiness.',
