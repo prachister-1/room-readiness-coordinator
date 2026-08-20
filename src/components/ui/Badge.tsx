@@ -22,7 +22,7 @@ export function Pill({
     risk: 'bg-risk-soft text-risk',
     blocked: 'bg-blocked-soft text-blocked',
     info: 'bg-info-soft text-info',
-    idle: 'bg-slate-100 text-muted',
+    idle: 'bg-canvas text-muted',
   }
   return (
     <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold ${map[tone]}`}>

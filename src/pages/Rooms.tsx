@@ -5,8 +5,8 @@ const tone: Record<string, string> = {
   cleaning: 'bg-info-soft text-info',
   inspection: 'bg-risk-soft text-risk',
   blocked: 'bg-blocked-soft text-blocked',
-  occupied: 'bg-slate-100 text-muted',
-  vacant: 'bg-slate-100 text-navy',
+  occupied: 'bg-canvas text-muted',
+  vacant: 'bg-canvas text-navy',
 }
 
 export function Rooms() {
@@ -14,8 +14,8 @@ export function Rooms() {
   return (
     <div className="space-y-5 pb-16">
       <div>
-        <div className="text-[11px] font-bold tracking-[0.14em] text-ready uppercase">Inventory</div>
-        <h1 className="mt-1 text-3xl font-semibold tracking-tight">Rooms</h1>
+        <div className="page-kicker">Inventory</div>
+        <h1 className="mt-1 text-3xl font-extrabold tracking-tight">Rooms</h1>
         <p className="mt-1 text-sm text-muted">
           Live room state feeding readiness cases. Approved allocations write here. The coordinator does not replace the PMS.
         </p>

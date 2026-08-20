@@ -70,7 +70,7 @@ export function GuestMessages() {
           </label>
           <div className="flex items-end">
             <button
-              className="w-full rounded-lg bg-navy py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:bg-slate-300"
+              className="w-full rounded-full bg-navy py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:bg-line disabled:text-muted"
               disabled={bodyLooksReady && readyLocked}
               onClick={() => (c.status === 'ready' && !readyLocked ? sendReadyMessage(c.id) : sendDraft(c.id))}
             >

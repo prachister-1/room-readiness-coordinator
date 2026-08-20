@@ -45,9 +45,9 @@ export function ShiftHandover() {
 
   return (
     <div className="space-y-6 pb-16">
-      <div className="rounded-[28px] border border-line bg-white p-6">
-        <div className="text-[11px] font-bold tracking-[0.14em] text-ready uppercase">Knowledge transfer</div>
-        <h1 className="mt-1 text-3xl font-semibold tracking-tight">Evening Shift Handover</h1>
+      <div className="border border-line bg-white p-6">
+        <div className="page-kicker">Knowledge transfer</div>
+        <h1 className="mt-1 text-3xl font-extrabold tracking-tight">Evening Shift Handover</h1>
         <div className="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-sm">
           <span>Outgoing: <strong>Alex Morgan</strong></span>
           <span>Incoming: <strong>Priya Shah</strong></span>

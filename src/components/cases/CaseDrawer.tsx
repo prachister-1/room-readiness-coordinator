@@ -23,16 +23,16 @@ export function CaseDrawer() {
   const canSendReady = allChecks
 
   return (
-    <div className="fixed inset-0 z-40 flex justify-end bg-navy/25" onClick={() => store.select(null)}>
+    <div className="fixed inset-0 z-40 flex justify-end bg-navy/20" onClick={() => store.select(null)}>
       <aside
-        className="flex h-full w-full max-w-[640px] flex-col overflow-y-auto bg-white shadow-[-16px_0_40px_rgba(15,31,61,0.12)]"
+        className="flex h-full w-full max-w-[640px] flex-col overflow-y-auto border-l border-line bg-white"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="sticky top-0 z-10 border-b border-line bg-white px-6 py-5">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <div className="text-[11px] font-bold tracking-[0.12em] text-muted uppercase">Readiness Case</div>
-              <h2 className="mt-1 text-2xl font-semibold tracking-tight">{c.guestName}</h2>
+              <div className="page-kicker">Readiness case</div>
+              <h2 className="mt-1 text-2xl font-extrabold tracking-tight">{c.guestName}</h2>
               <p className="mt-1 text-sm text-muted">
                 Reservation #{c.reservationId} · Arrival today, {c.eta} · Promised check-in {c.promisedCheckIn}
               </p>
@@ -68,7 +68,7 @@ export function CaseDrawer() {
               <button
                 key={t}
                 onClick={() => setTab(t)}
-                className={`rounded-lg px-3 py-1.5 text-sm font-medium ${tab === t ? 'bg-navy text-white' : 'bg-canvas text-muted'}`}
+                className={`rounded-full px-3 py-1.5 text-sm font-medium ${tab === t ? 'bg-navy text-white' : 'bg-canvas text-muted'}`}
               >
                 {t === 'case' ? 'Case' : 'Audit trail'}
               </button>
@@ -203,10 +203,10 @@ function ActionCard({
   tone: 'ready' | 'risk' | 'info'
   children: ReactNode
 }) {
-  const border = tone === 'ready' ? 'border-ready/30 bg-ready-soft' : tone === 'risk' ? 'border-risk/30 bg-risk-soft' : 'border-info/30 bg-info-soft'
+  const border = tone === 'ready' ? 'border-ready bg-ready-soft' : tone === 'risk' ? 'border-line bg-ai-soft' : 'border-line bg-info-soft'
   return (
-    <section className={`rounded-2xl border p-4 ${border}`}>
-      <div className="mb-1 text-[11px] font-bold tracking-[0.08em] uppercase">
+    <section className={`border p-4 ${border}`}>
+      <div className="page-kicker mb-1">
         {tone === 'ready' ? 'Verified outcome' : 'AI recommendation — not yet executed'}
       </div>
       <h3 className="text-sm font-semibold">{title}</h3>
@@ -256,7 +256,7 @@ function MayaRecovery() {
         human="Human: approve the room change. Agents cannot move an assigned guest."
       />
       <div className="mt-4 flex flex-wrap gap-2">
-        <button className="rounded-lg bg-navy px-3 py-2 text-sm font-semibold text-white" onClick={approveMaya}>
+        <button className="rounded-full bg-navy px-4 py-2 text-sm font-semibold text-white" onClick={approveMaya}>
           Approve move to 418
         </button>
         <button className="rounded-lg border border-line bg-white px-3 py-2 text-sm font-medium" onClick={keepMaya}>
@@ -392,7 +392,7 @@ function ReadyMessage({ id, body }: { id: string; body: string }) {
   return (
     <ActionCard tone="ready" title="Send room ready message">
       <p className="mb-3 text-sm whitespace-pre-wrap">{body}</p>
-      <button className="rounded-lg bg-ready px-3 py-2 text-sm font-semibold text-white" onClick={() => sendReadyMessage(id)}>
+      <button className="rounded-full bg-ai px-4 py-2 text-sm font-semibold text-navy" onClick={() => sendReadyMessage(id)}>
         Send room ready message
       </button>
     </ActionCard>

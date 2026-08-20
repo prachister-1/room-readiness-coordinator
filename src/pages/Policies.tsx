@@ -39,8 +39,8 @@ export function Policies() {
   return (
     <div className="space-y-6 pb-16">
       <div>
-        <div className="text-[11px] font-bold tracking-[0.14em] text-ready uppercase">Safe operation</div>
-        <h1 className="mt-1 text-3xl font-semibold tracking-tight">Policies & Guardrails</h1>
+        <div className="page-kicker">Safe operation</div>
+        <h1 className="mt-1 text-3xl font-extrabold tracking-tight">Policies & Guardrails</h1>
         <p className="mt-1 max-w-3xl text-sm text-muted">
           Agents automate preparation work to save time. They do not automate guest promises or policy exceptions. Only the Coordinator changes overall readiness state.
         </p>
@@ -52,23 +52,23 @@ export function Policies() {
             key={m.id}
             onClick={() => setAutonomyMode(m.id)}
             className={`rounded-2xl border p-5 text-left ${
-              autonomyMode === m.id ? 'border-ready bg-ready-soft' : 'border-line bg-white'
+              autonomyMode === m.id ? 'border-navy bg-canvas' : 'border-line bg-white'
             }`}
           >
             <div className="text-sm font-semibold">{m.name}</div>
-            <div className="mt-1 text-xs font-semibold text-ready">{autonomyMode === m.id ? 'Active' : m.use}</div>
+            <div className="mt-1 text-xs font-semibold text-muted">{autonomyMode === m.id ? 'Active' : m.use}</div>
             <p className="mt-2 text-sm text-muted">{m.note}</p>
           </button>
         ))}
       </section>
 
       {autonomyMode === 'bounded' && (
-        <section className="rounded-2xl border border-ready bg-ready-soft p-5">
+        <section className="border border-line bg-canvas p-5">
           <h2 className="text-sm font-semibold">Run eligible automations</h2>
           <p className="mt-1 text-sm text-muted">
             Will auto-run Olivia’s same-category assignment, an expectation-setting message, and Sofia’s inspection reassignment. Will not move Kiara’s already-assigned room, Daniel’s suite, or Samira’s accessible room.
           </p>
-          <button className="mt-3 rounded-lg bg-ready px-4 py-2 text-sm font-semibold text-white" onClick={runBoundedAutomation}>
+          <button className="mt-3 rounded-full bg-ai px-4 py-2 text-sm font-semibold text-navy" onClick={runBoundedAutomation}>
             Run eligible automations
           </button>
           <p className="mt-2 text-xs text-muted">{automatedToday} automated actions recorded today.</p>

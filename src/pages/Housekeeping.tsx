@@ -22,13 +22,13 @@ export function Housekeeping() {
         <p className="text-[11px] font-bold tracking-[0.12em] text-muted uppercase">Housekeeping staff view</p>
         <p className="text-xs text-muted">Only the next room, the due time, and why it matters.</p>
       </div>
-      <div className="overflow-hidden rounded-[32px] border border-line bg-white shadow-[0_16px_50px_rgba(15,31,61,0.12)]">
+      <div className="overflow-hidden rounded-lg border border-line bg-white">
         <div className="bg-navy px-5 pt-6 pb-5 text-white">
           <div className="text-[11px] tracking-wide text-white/70 uppercase">My tasks</div>
           <div className="mt-1 text-xl font-semibold">Anna K. — Floor 4</div>
           <div className="mt-2 text-sm text-white/80">Today’s progress: {done} of {hkTasks.length} complete</div>
-          <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/15">
-            <div className="h-full bg-ready" style={{ width: `${(done / hkTasks.length) * 100}%` }} />
+          <div className="mt-3 h-1.5 overflow-hidden bg-white/15">
+            <div className="h-full bg-lime" style={{ width: `${(done / hkTasks.length) * 100}%` }} />
           </div>
         </div>
         <div className="grid gap-0 sm:grid-cols-1">

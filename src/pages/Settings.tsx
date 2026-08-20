@@ -13,8 +13,8 @@ export function Settings() {
   return (
     <div className="max-w-3xl space-y-4 pb-16">
       <div>
-        <div className="text-[11px] font-bold tracking-[0.14em] text-ready uppercase">Property</div>
-        <h1 className="mt-1 text-3xl font-semibold tracking-tight">Settings</h1>
+        <div className="page-kicker">Property</div>
+        <h1 className="mt-1 text-3xl font-extrabold tracking-tight">Settings</h1>
       </div>
       <section className="rounded-2xl border border-line bg-white p-5">
         <h2 className="text-sm font-semibold">Hotel</h2>

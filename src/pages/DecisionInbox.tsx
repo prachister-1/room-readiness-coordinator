@@ -26,17 +26,17 @@ export function DecisionInbox() {
   return (
     <div className="space-y-6 pb-16">
       <div>
-        <div className="text-[11px] font-bold tracking-[0.14em] text-ready uppercase">Human in the loop</div>
-        <h1 className="mt-1 text-3xl font-semibold tracking-tight">Decision Inbox</h1>
+        <div className="page-kicker">Human in the loop</div>
+        <h1 className="mt-1 text-3xl font-extrabold tracking-tight">Decision Inbox</h1>
         <p className="mt-1 max-w-3xl text-sm text-muted">
           Agents recommend. Staff approve, reject, or escalate. Bounded automation can take reversible SOP work. Suite, accessibility, and room-ready promises never auto-run.
         </p>
       </div>
 
       {autonomyMode === 'bounded' && (
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-ready bg-ready-soft px-4 py-3">
+        <div className="flex flex-wrap items-center justify-between gap-3 border border-line bg-canvas px-4 py-3">
           <p className="text-sm">Bounded auto-execution is on. Eligible cards can run without a click.</p>
-          <button className="rounded-lg bg-ready px-3 py-2 text-sm font-semibold text-white" onClick={runBoundedAutomation}>
+          <button className="rounded-full bg-ai px-4 py-2 text-sm font-semibold text-navy" onClick={runBoundedAutomation}>
             Run eligible automations
           </button>
         </div>

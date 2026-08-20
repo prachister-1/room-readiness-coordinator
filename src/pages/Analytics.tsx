@@ -33,8 +33,8 @@ export function Analytics() {
   return (
     <div className="space-y-6 pb-16">
       <div>
-        <div className="text-[11px] font-bold tracking-[0.14em] text-ready uppercase">Performance</div>
-        <h1 className="mt-1 text-3xl font-semibold tracking-tight">Room Readiness Performance</h1>
+        <div className="page-kicker">Performance</div>
+        <h1 className="mt-1 text-3xl font-extrabold tracking-tight">Room Readiness Performance</h1>
         <p className="mt-1 text-sm text-muted">
           Success is a verified room at the promised time — not a high automation rate.
         </p>
@@ -52,44 +52,44 @@ export function Analytics() {
         <ChartCard title="Readiness rate by hour">
           <ResponsiveContainer width="100%" height={240}>
             <BarChart data={hourlyReadiness}>
-              <CartesianGrid stroke="#e6eaf0" vertical={false} />
-              <XAxis dataKey="hour" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 11 }} axisLine={false} tickLine={false} domain={[60, 100]} />
+              <CartesianGrid stroke="#e8e4dc" vertical={false} />
+              <XAxis dataKey="hour" tick={{ fontSize: 11, fill: '#8c8c8c' }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 11, fill: '#8c8c8c' }} axisLine={false} tickLine={false} domain={[60, 100]} />
               <Tooltip />
-              <Bar dataKey="rate" fill="#14805c" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="rate" fill="#000000" radius={0} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
         <ChartCard title="At-risk arrival causes">
           <ResponsiveContainer width="100%" height={240}>
             <BarChart data={causeBreakdown} layout="vertical" margin={{ left: 80 }}>
-              <CartesianGrid stroke="#e6eaf0" horizontal={false} />
-              <XAxis type="number" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
-              <YAxis type="category" dataKey="cause" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} width={110} />
+              <CartesianGrid stroke="#e8e4dc" horizontal={false} />
+              <XAxis type="number" tick={{ fontSize: 11, fill: '#8c8c8c' }} axisLine={false} tickLine={false} />
+              <YAxis type="category" dataKey="cause" tick={{ fontSize: 11, fill: '#8c8c8c' }} axisLine={false} tickLine={false} width={110} />
               <Tooltip />
-              <Bar dataKey="value" fill="#c47b12" radius={[0, 4, 4, 0]} />
+              <Bar dataKey="value" fill="#ff83da" radius={0} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
         <ChartCard title="Verified-ready percentage · last 30 days">
           <ResponsiveContainer width="100%" height={240}>
             <LineChart data={readinessTrend}>
-              <CartesianGrid stroke="#e6eaf0" />
-              <XAxis dataKey="day" tick={{ fontSize: 10 }} interval={4} axisLine={false} tickLine={false} />
-              <YAxis domain={[70, 90]} tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
+              <CartesianGrid stroke="#e8e4dc" />
+              <XAxis dataKey="day" tick={{ fontSize: 10, fill: '#8c8c8c' }} interval={4} axisLine={false} tickLine={false} />
+              <YAxis domain={[70, 90]} tick={{ fontSize: 11, fill: '#8c8c8c' }} axisLine={false} tickLine={false} />
               <Tooltip />
-              <Line type="monotone" dataKey="ready" stroke="#2b6cb0" strokeWidth={2} dot={false} />
+              <Line type="monotone" dataKey="ready" stroke="#000000" strokeWidth={2} dot={false} />
             </LineChart>
           </ResponsiveContainer>
         </ChartCard>
         <ChartCard title="Trace completion by department">
           <ResponsiveContainer width="100%" height={240}>
             <BarChart data={deptCompletion}>
-              <CartesianGrid stroke="#e6eaf0" vertical={false} />
-              <XAxis dataKey="dept" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
-              <YAxis domain={[0, 100]} tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
+              <CartesianGrid stroke="#e8e4dc" vertical={false} />
+              <XAxis dataKey="dept" tick={{ fontSize: 11, fill: '#8c8c8c' }} axisLine={false} tickLine={false} />
+              <YAxis domain={[0, 100]} tick={{ fontSize: 11, fill: '#8c8c8c' }} axisLine={false} tickLine={false} />
               <Tooltip />
-              <Bar dataKey="complete" fill="#0f1f3d" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="complete" fill="#000000" radius={0} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>

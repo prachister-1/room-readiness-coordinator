@@ -1,5 +1,4 @@
 import {
-  Bot,
   GitBranch,
   ListChecks,
   MessageSquare,
@@ -78,12 +77,7 @@ export function AgentMark({
   return (
     <span className={`agent-orb ${sizeClass[size]} ${tone} ${live ? 'agent-orb-live' : ''} ${className}`} title={look.name}>
       {live && <span className="agent-ring" aria-hidden />}
-      <Icon size={iconSize[size]} strokeWidth={2.2} />
-      {look.kind === 'ai' && (
-        <span className="agent-bot">
-          <Bot size={size === 'sm' ? 8 : 10} />
-        </span>
-      )}
+      <Icon size={iconSize[size]} strokeWidth={2} />
     </span>
   )
 }
@@ -99,9 +93,9 @@ export function AgentTag({
 }) {
   const look = typeof agent === 'string' && agent in AGENT_LOOK ? AGENT_LOOK[agent as AgentLookId] : lookForAgent(String(agent))
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full bg-white py-0.5 pr-2 pl-0.5 ring-1 ring-line">
+    <span className="inline-flex items-center gap-1.5">
       <AgentMark agent={look.id} live={live} size={size} />
-      <span className="text-[11px] font-semibold">{look.short}</span>
+      <span className="text-[11px] font-medium">{look.short}</span>
     </span>
   )
 }
@@ -122,7 +116,7 @@ export function AgentIdentity({
       <div className="min-w-0">
         <div className="flex flex-wrap items-center gap-1.5">
           <span className="text-sm font-semibold">{look.name}</span>
-          <KindBadge kind={look.kind} live={live} />
+          <KindBadge kind={look.kind} />
         </div>
         <p className="text-[11px] text-muted">{look.role}</p>
         {detail && <p className="mt-0.5 line-clamp-2 text-xs text-muted">{detail}</p>}

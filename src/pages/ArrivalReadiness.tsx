@@ -1,10 +1,7 @@
-import type { ReactNode } from 'react'
-import { AlertTriangle, Clock, ShieldAlert, Sparkles } from 'lucide-react'
 import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { forecast } from '../data/mock'
 import { useStore } from '../state/Store'
 import { GuestCard } from '../components/cases/GuestCard'
-import { KindBadge } from '../components/ui/WorkKind'
 import { WorkflowChips } from '../components/agents/UseCaseBoard'
 import type { ReadinessStatus } from '../types'
 
@@ -37,8 +34,8 @@ export function ArrivalReadiness() {
   return (
     <div className="space-y-6 pb-16">
       <div>
-        <div className="text-[11px] font-bold tracking-[0.14em] text-ready uppercase">Operations</div>
-        <h1 className="mt-1 text-3xl font-semibold tracking-tight">Arrival Readiness</h1>
+        <div className="page-kicker">Operations</div>
+        <h1 className="mt-1 text-3xl font-extrabold tracking-tight">Arrival Readiness</h1>
         <p className="mt-1 max-w-3xl text-sm text-muted">
             Ensure the right room is ready for the right guest at the right time — then communicate the verified outcome.
         </p>
@@ -46,7 +43,7 @@ export function ArrivalReadiness() {
 
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
         {kpis.map((k) => (
-          <div key={k.l} className="rounded-2xl border border-line bg-white p-4 shadow-[0_1px_2px_rgba(15,31,61,0.04)]">
+          <div key={k.l} className="border border-line bg-white p-4">
             <div className={`text-2xl font-semibold tracking-tight ${k.l.includes('risk') || k.l.includes('Blocked') ? 'text-risk' : 'text-navy'}`}>{k.n}</div>
             <div className="mt-1 text-xs text-muted">{k.l}</div>
           </div>
@@ -54,25 +51,25 @@ export function ArrivalReadiness() {
       </div>
 
       <div className="grid gap-4 xl:grid-cols-[1.4fr_0.9fr]">
-        <section className="rounded-2xl border border-line bg-white p-4">
+        <section className="border border-line bg-white p-4">
           <div className="mb-3 flex items-center justify-between">
             <div>
               <h2 className="text-sm font-semibold">Readiness forecast</h2>
               <p className="text-xs text-muted">Rooms expected ready vs promised arrivals</p>
             </div>
-            <span className="rounded-full bg-risk-soft px-2 py-1 text-[11px] font-semibold text-risk">Peak pressure 14:00</span>
+            <span className="rounded-full bg-risk-soft px-2 py-1 text-[11px] font-semibold text-risk">Peak 14:00</span>
           </div>
           <div className="h-56">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={forecast}>
-                <CartesianGrid stroke="#e6eaf0" vertical={false} />
-                <XAxis dataKey="hour" tick={{ fontSize: 11, fill: '#5b6b82' }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 11, fill: '#5b6b82' }} axisLine={false} tickLine={false} />
+                <CartesianGrid stroke="#e8e4dc" vertical={false} />
+                <XAxis dataKey="hour" tick={{ fontSize: 11, fill: '#8c8c8c' }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 11, fill: '#8c8c8c' }} axisLine={false} tickLine={false} />
                 <Tooltip />
-                <Bar dataKey="promised" fill="#c5d0de" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="ready" radius={[4, 4, 0, 0]}>
+                <Bar dataKey="promised" fill="#c4c9dd" radius={0} />
+                <Bar dataKey="ready" radius={0}>
                   {forecast.map((d) => (
-                    <Cell key={d.hour} fill={d.hour === '14:00' ? '#c47b12' : '#14805c'} />
+                    <Cell key={d.hour} fill={d.hour === '14:00' ? '#ff83da' : '#000000'} />
                   ))}
                 </Bar>
               </BarChart>
@@ -80,15 +77,11 @@ export function ArrivalReadiness() {
           </div>
         </section>
 
-        <section className="rounded-2xl border border-line bg-white p-4">
-          <div className="mb-3 flex items-center gap-2">
-            <Sparkles size={16} className="text-info" />
-            <h2 className="text-sm font-semibold">AI recommendations</h2>
-          </div>
-          <p className="mb-3 text-xs text-muted">Explainable suggestions. Nothing writes until you approve.</p>
+        <section className="border border-line bg-white p-4">
+          <h2 className="text-sm font-semibold">AI recommendations</h2>
+          <p className="mb-3 text-xs text-muted">Nothing writes until you approve.</p>
           <div className="space-y-3">
             <Rec
-              icon={<Clock size={14} />}
               text="Kiara · 418 over dirty 412. Same Deluxe King, already clean, cot possible. 92%. Room change still needs you."
               onClick={() => {
                 approveMaya()
@@ -97,13 +90,11 @@ export function ArrivalReadiness() {
               action="Approve 418"
             />
             <Rec
-              icon={<AlertTriangle size={14} />}
               text="Sofia · 14:00 will miss if inspection stays unassigned. Priya S. is free on Floor 2. Ready message already locked."
               onClick={() => select('sofia')}
               action="Open Sofia"
             />
             <Rec
-              icon={<ShieldAlert size={14} />}
               text="Daniel · 507 will miss 15:00. 510 is an inspected suite. Suite moves never auto-run."
               onClick={() => select('daniel')}
               action="Open Daniel"
@@ -112,7 +103,7 @@ export function ArrivalReadiness() {
         </section>
       </div>
 
-      <section className="rounded-2xl border border-line bg-white p-4">
+      <section className="border border-line bg-white p-4">
         <div className="mb-3 flex items-center justify-between gap-3">
           <div>
             <h2 className="text-sm font-semibold">Next 90 minutes — promise watch</h2>
@@ -126,7 +117,7 @@ export function ArrivalReadiness() {
               <button
                 key={c.id}
                 onClick={() => select(c.id)}
-                className="rounded-xl border border-line p-3 text-left hover:border-ready"
+                className="border border-line p-3 text-left hover:border-navy"
               >
                 <div className="text-sm font-semibold">{c.guestName}</div>
                 <div className="text-xs text-muted">Arrival {c.eta} · {c.roomNumber ? `Room ${c.roomNumber}` : 'Unassigned'}</div>
@@ -163,25 +154,18 @@ export function ArrivalReadiness() {
 }
 
 function Rec({
-  icon,
   text,
   action,
   onClick,
 }: {
-  icon: ReactNode
   text: string
   action: string
   onClick: () => void
 }) {
   return (
-    <div className="rounded-xl border border-line bg-canvas p-3">
-      <div className="mb-2 flex items-center gap-2 text-ai">
-        {icon}
-        <span className="text-[11px] font-bold tracking-wide uppercase">AI recommendation</span>
-        <KindBadge kind="ai" />
-      </div>
+    <div className="border border-line p-3">
       <p className="text-sm leading-relaxed">{text}</p>
-      <button onClick={onClick} className="mt-2 text-xs font-semibold text-navy underline-offset-2 hover:underline">
+      <button onClick={onClick} className="mt-3 rounded-full bg-ai px-3 py-1.5 text-xs font-semibold text-navy">
         {action}
       </button>
     </div>

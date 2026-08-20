@@ -18,8 +18,8 @@ export const traceClass: Record<TraceStatus, string> = {
   complete: 'bg-ready-soft text-ready',
   'in-progress': 'bg-info-soft text-info',
   overdue: 'bg-blocked-soft text-blocked',
-  cancelled: 'bg-slate-100 text-idle',
-  'not-started': 'bg-slate-100 text-idle',
+  cancelled: 'bg-canvas text-idle',
+  'not-started': 'bg-canvas text-idle',
 }
 
 export const initials = (name: string) =>

@@ -18,7 +18,7 @@ function ToastItem({ id, message, onDone }: { id: string; message: string; onDon
     return () => clearTimeout(t)
   }, [id, onDone])
   return (
-    <div className="pointer-events-auto rounded-xl bg-navy px-4 py-3 text-sm text-white shadow-[0_12px_32px_rgba(15,31,61,0.22)]">
+    <div className="pointer-events-auto rounded-lg bg-navy px-4 py-3 text-sm text-white">
       {message}
     </div>
   )

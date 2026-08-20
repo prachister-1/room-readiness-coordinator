@@ -130,7 +130,7 @@ function OliviaReadySend() {
       <div className="text-[11px] font-bold tracking-wide text-ready uppercase">Verified outcome</div>
       <h4 className="mt-1 text-sm font-semibold">Verified ready at 12:12</h4>
       <p className="mt-1 text-sm">Required room checks are complete. The room-ready message is now unlocked.</p>
-      <button className="mt-3 rounded-lg bg-ready px-3 py-2 text-sm font-semibold text-white" onClick={() => sendReadyMessage('olivia')}>
+      <button className="mt-3 rounded-full bg-ai px-4 py-2 text-sm font-semibold text-navy" onClick={() => sendReadyMessage('olivia')}>
         Send room ready message
       </button>
     </div>
